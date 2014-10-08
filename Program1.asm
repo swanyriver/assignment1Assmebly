@@ -41,6 +41,8 @@ main PROC
 
 ;/////////////////////////////////////////////////////
 ;//////////////////INTRO PROGRAM//////////////////////
+
+															;########INTRODUCTION##########
 	mov	edx,OFFSET	my_name
 	call WriteString
 	call crlf
@@ -48,7 +50,7 @@ main PROC
 	mov	edx,OFFSET	instruction
 	call WriteString
 	call crlf
-
+															;########GET DATA##############
 ;////////////PROMPT INPUT//// LHS ////////////////////
 	mov	edx,OFFSET	input_Lhs
 	call WriteString
@@ -61,6 +63,7 @@ main PROC
 	call WriteString
 	call crlf
 ;///////////RETRIEVE INPUT/// RHS ////////////////////
+															;####CALCULATE VALUES##########
 ;//////////CALCULATE SUM //// LHS + RHS///////////////
 ;//////////STORE RESULT///////////////////////////////
 ;//////////CALCULATE DIFF// LHS - RHS ////////////////
@@ -69,7 +72,10 @@ main PROC
 ;//////////STORE RESULT///////////////////////////////
 ;//////////CALCULATE PROUDUC// LHS * RHS /////////////
 ;//////////STORE RESULT///////////////////////////////
-;//////////DISPLAY RESULTS////////////////////////////
+
+															;######DISPLAY RESULTS#########
+
+;//////////DISPLAY SUM///////////////////////////////
 	mov eax, lhs
 	call WriteInt
 	mov al, ' '
@@ -86,7 +92,14 @@ main PROC
 	call WriteChar
 	mov eax, mSum
 	call WriteInt
+	call crlf
+;//////////DISPLAY DIF/////////////////////////////////
 
+;//////////DISPLAY PRODUCT/////////////////////////////
+
+;//////////DISPLAY DIV/////////////////////////////////
+
+															;######GOODBYE MESSAGE#########
 ;//////////DISPLAY GOODBYE MESSAGE////////////////////
 	mov	edx,OFFSET	goodbye
 	call WriteString
