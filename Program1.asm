@@ -1,7 +1,7 @@
 TITLE Programming Assignment #1     (Program1.asm)
 
 ; Author:Brandon Swanson
-; Course / Project ID:  Programming Assignment #1    Date:10/6/14
+; Course / Project ID:  CS271-400 Fall14 Programming Assignment #1    Date:10/6/14
 ; Description:This Program Will, Display its title, and then prompt the user to enter two numbers
 ;				It will perfrom various operations on these numbers and then terminate
 
