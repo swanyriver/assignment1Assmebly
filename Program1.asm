@@ -21,16 +21,23 @@ input_Rhs	BYTE "Please enter the right-hand-side value (positive integer): ",0
 goodbye		BYTE "Thank you, have a nice day",0
 
 ;///////////////////////////INPUT VARIABLES///////////////////////////////
-Lhs			DWORD 0 ;LEFT HAND SIDE ARGUMENT
-Rhs			DWORD 0 ;RIGHT HAND SIDE ARGUMENT
+Lhs			DWORD ? ;LEFT HAND SIDE ARGUMENT
+Rhs			DWORD ? ;RIGHT HAND SIDE ARGUMENT
 
 ;//////////////////////////OPERATION RESULTS/////////////////////////////////
-mSum		DWORD 0
-mDiff		DWORD 0
-mProduct	DWORD 0
-mQuotient	DWORD 0
-mRemainder	DWORD 0
+mSum		DWORD ?
+mDiff		SDWORD ?  ; only result of two positive numbers that can be negative
+mProduct	DWORD ?
+mQuotient	DWORD ?
+mRemainder	DWORD ?
 
+;////////////////////////RESULT DISPLAY STRINGS///////////////////////////////
+sPlus		BYTE  " + ",0
+sMinus		BYTE  " - ",0
+sTimes		BYTE  " * ",0
+sDiv		BYTE  " / ",0
+sEqu		BYTE  " = ",0
+sRemain		BYTE "  With a remainder of: ",0
 
 ;##########################################################################################
 ;################ PROCEDURE: MAIN  ########################################################
@@ -56,48 +63,120 @@ main PROC
 	call WriteString
 	call crlf
 
-
 ;///////////RETRIEVE INPUT/// LHS ////////////////////
+	call ReadDec
+	mov  Lhs, eax	;store input
+	
+
 ;////////////PROMPT INPUT//// RHS ////////////////////
 	mov	edx,OFFSET	input_Rhs
 	call WriteString
 	call crlf
 ;///////////RETRIEVE INPUT/// RHS ////////////////////
+	call ReadDec
+	mov  Rhs, eax	;store input
+
 															;####CALCULATE VALUES##########
 ;//////////CALCULATE SUM //// LHS + RHS///////////////
-;//////////STORE RESULT///////////////////////////////
+	mov eax,lhs
+	add eax,rhs
+	mov mSum,eax	; store result
+
 ;//////////CALCULATE DIFF// LHS - RHS ////////////////
-;//////////STORE RESULT///////////////////////////////
+	mov eax,lhs
+	sub eax,rhs
+	mov mDiff,eax	; store result
+
 ;//////////CALCULATE PROUDUC// LHS * RHS /////////////
-;//////////STORE RESULT///////////////////////////////
-;//////////CALCULATE PROUDUC// LHS * RHS /////////////
-;//////////STORE RESULT///////////////////////////////
+	mov eax,lhs
+	mul rhs
+	mov mProduct,eax	; store result
+
+;//////////CALCULATE QUOTIENT// LHS / RHS ////////////
+	mov edx, 0		;this initializes edx 
+					;because DIV accesses edx:eax for a 64bit dividend 
+	mov eax, lhs
+	div rhs
+
+	mov mQuotient, eax	;store result
+	mov mRemainder, edx ;store remainder
 
 															;######DISPLAY RESULTS#########
 
 ;//////////DISPLAY SUM///////////////////////////////
-	mov eax, lhs
-	call WriteInt
-	mov al, ' '
-	call WriteChar
-	mov al, '+'
-	call Writechar
-	mov al, ' '
-	call WriteChar
-	mov eax, lhs
-	call WriteInt
-	mov al, ' '
-	call WriteChar
-	mov al, '='
-	call WriteChar
+	mov eax, Lhs
+	call WriteDec			;display left hand side argument
+
+	mov	edx,OFFSET	sPlus
+	call WriteString		;display opperand
+
+	mov eax, Rhs
+	call WriteDec
+
+	mov	edx,OFFSET	sEQU
+	call WriteString		;display right hand side argument
+
 	mov eax, mSum
-	call WriteInt
+	call WriteDec			;display result of operation
 	call crlf
 ;//////////DISPLAY DIF/////////////////////////////////
+	mov eax, Lhs
+	call WriteDec			;display left hand side argument
+
+	mov	edx,OFFSET	sMinus
+	call WriteString		;display opperand
+
+	mov eax, Rhs
+	call WriteDec
+
+	mov	edx,OFFSET	sEQU
+	call WriteString		;display right hand side argument
+
+	mov eax, mDiff
+	call WriteInt			;display result of operation
+	call crlf
 
 ;//////////DISPLAY PRODUCT/////////////////////////////
+	mov eax, Lhs
+	call WriteDec			;display left hand side argument
+
+	mov	edx,OFFSET	sTimes
+	call WriteString		;display opperand
+
+	mov eax, Rhs
+	call WriteDec
+
+	mov	edx,OFFSET	sEQU
+	call WriteString		;display right hand side argument
+
+	mov eax, mProduct
+	call WriteDec			;display result of operation
+	call crlf
 
 ;//////////DISPLAY DIV/////////////////////////////////
+	mov eax, Lhs
+	call WriteDec			;display left hand side argument
+
+	mov	edx,OFFSET	sDiv
+	call WriteString		;display opperand
+
+	mov eax, Rhs
+	call WriteDec
+
+	mov	edx,OFFSET	sEQU
+	call WriteString		;display right hand side argument
+
+	mov eax, mQuotient
+	call WriteDec			;display result of operation
+	
+	mov edx,OFFSET	sRemain
+	call WriteString		;display remainder label
+
+	mov eax, mRemainder
+	call WriteDec			;display remainder of operation
+	call crlf
+
+
 
 															;######GOODBYE MESSAGE#########
 ;//////////DISPLAY GOODBYE MESSAGE////////////////////
