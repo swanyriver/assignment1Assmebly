@@ -40,7 +40,7 @@ mRemainder	DWORD ?
 sPlus		BYTE  " + ",0
 sMinus		BYTE  " - ",0
 sTimes		BYTE  " * ",0
-sDiv		BYTE  " / ",0
+sDiv		BYTE  32,246,32,0
 sEqu		BYTE  " = ",0
 sRemain		BYTE  "  With a remainder of: ",0
 
