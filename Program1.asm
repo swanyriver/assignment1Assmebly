@@ -14,9 +14,10 @@ INCLUDE Irvine32.inc
 
 ;//////////////////////////////////////////OUTPUT STRINGS////////////////////////
 my_name		BYTE "I am Brandon Swanson and this is Program Assignment 1",0
-instruction BYTE "This Program will perform a series of opperations on the numbers entered and output the result",0
-input_Lhs	BYTE "Please enter the left-hand-side value (non-negative integer): ",0
-input_Rhs	BYTE "Please enter the right-hand-side value (positive integer): ",0
+instruction BYTE "This Program will perform a series of opperations on the numbers entered and output the result",13,10
+			BYTE "Requirments LHS <= RHS ,  0<LHS , 0<RHS",0
+input_Lhs	BYTE "Please enter the left-hand-side value: ",0
+input_Rhs	BYTE "Please enter the right-hand-side value: ",0
 
 again		BYTE "Would you like to perorm these operations on different numbers?",0
 yesNo		BYTE "press 'y' for yes, any other key will exit",0
