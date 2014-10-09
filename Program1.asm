@@ -19,9 +19,9 @@ input_Lhs	BYTE "Please enter the left-hand-side value (non-negative integer): ",
 input_Rhs	BYTE "Please enter the right-hand-side value (positive integer): ",0
 
 again		BYTE "Would you like to perorm these operations on different numbers?",0
-yesNo		BYTE "y for yes, any other input will exit",0
-rhsLess		BYTE "The number for the right hand side is less than left hand side,  would you like to swap them?",0
-swapYes		BYTE "y will swap the values, any other input will give you the oportunity to enter new numbers",0
+yesNo		BYTE "press 'y' for yes, any other key will exit",0
+rhsMore		BYTE "The number for the right hand side is greater than the left hand side,  would you like to swap them?",0
+swapYes		BYTE "press 'y' will swap the values, any other key will give you the oportunity to enter new numbers",0
 
 goodbye		BYTE "Thank you, have a nice day",0
 
@@ -45,7 +45,7 @@ sEqu		BYTE  " = ",0
 sRemain		BYTE  "  With a remainder of: ",0
 
 ;///////////////////////CONTROL VARIABLE/////////////////////////////////////
-yes			BYTE  'y'
+affirm		BYTE  'y'
 
 ;##########################################################################################
 ;################ PROCEDURE: MAIN  ########################################################
@@ -65,8 +65,10 @@ main PROC
 	mov	edx,OFFSET	instruction
 	call WriteString
 	call crlf
-	
-GET_NUMBERS:
+
+;################################################
+GET_NUMBERS: ;###################################
+;################################################
 															;########GET DATA##############
 ;////////////PROMPT INPUT//// LHS ////////////////////
 	mov	edx,OFFSET	input_Lhs
@@ -86,6 +88,36 @@ GET_NUMBERS:
 	call ReadDec
 	mov  Rhs, eax	;store input
 
+;///////// ASSERTING RHS <= LHS //////////////////////
+	mov eax,rhs
+	cmp eax,lhs	  ;Checking rhs>lhs
+	ja rhsGreater ;True, swap or re-enter
+
+	jmp Calculate ;not greater, continue to calculations
+
+rhsGreater:
+	mov edx, OFFSET rhsMore
+	call WriteString		;display error message
+	call crlf
+
+	mov edx, OFFSET swapYes
+	call Writestring		;display input instructions
+	call crlf
+
+	call Readchar			;get single character from keyboard
+	cmp al, affirm			;check for char=='y'
+	jne	GET_NUMBERS			;FALSE return to number input
+
+							;TRUE swap numbers
+	mov eax,lhs
+	mov ebx,rhs
+	mov lhs,ebx
+	mov rhs,eax
+
+	
+;################################################
+Calculate: ;#####################################
+;################################################
 															;####CALCULATE VALUES##########
 ;//////////CALCULATE SUM //// LHS + RHS///////////////
 	mov eax,lhs
@@ -185,6 +217,19 @@ GET_NUMBERS:
 	mov eax, mRemainder
 	call WriteDec			;display remainder of operation
 	call crlf
+
+
+;////////// CHECK FOR REPEAT /////////////////////////
+	mov edx, OFFSET again
+	call WriteString		;display prompt to repeat
+	call crlf
+	mov edx, OFFSET yesNo
+	call Writestring		;display input instructions
+	call crlf
+
+	call Readchar			;get single character from keyboard
+	cmp al, affirm			;check for char=='y'
+	je	GET_NUMBERS			;TRUE return to number input
 
 
 
