@@ -17,6 +17,12 @@ my_name		BYTE "I am Brandon Swanson and this is Program Assignment 1",0
 instruction BYTE "This Program will perform a series of opperations on the numbers entered and output the result",0
 input_Lhs	BYTE "Please enter the left-hand-side value (non-negative integer): ",0
 input_Rhs	BYTE "Please enter the right-hand-side value (positive integer): ",0
+
+again		BYTE "Would you like to perorm these operations on different numbers?",0
+yesNo		BYTE "y for yes, any other input will exit",0
+rhsLess		BYTE "The number for the right hand side is less than left hand side,  would you like to swap them?",0
+swapYes		BYTE "y will swap the values, any other input will give you the oportunity to enter new numbers",0
+
 goodbye		BYTE "Thank you, have a nice day",0
 
 ;///////////////////////////INPUT VARIABLES///////////////////////////////
@@ -36,7 +42,10 @@ sMinus		BYTE  " - ",0
 sTimes		BYTE  " * ",0
 sDiv		BYTE  " / ",0
 sEqu		BYTE  " = ",0
-sRemain		BYTE "  With a remainder of: ",0
+sRemain		BYTE  "  With a remainder of: ",0
+
+;///////////////////////CONTROL VARIABLE/////////////////////////////////////
+yes			BYTE  'y'
 
 ;##########################################################################################
 ;################ PROCEDURE: MAIN  ########################################################
@@ -56,6 +65,8 @@ main PROC
 	mov	edx,OFFSET	instruction
 	call WriteString
 	call crlf
+	
+GET_NUMBERS:
 															;########GET DATA##############
 ;////////////PROMPT INPUT//// LHS ////////////////////
 	mov	edx,OFFSET	input_Lhs
