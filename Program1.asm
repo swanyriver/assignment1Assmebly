@@ -15,7 +15,6 @@ INCLUDE Irvine32.inc
 ;//////////////////////////////////////////OUTPUT STRINGS////////////////////////
 my_name		BYTE "I am Brandon Swanson and this is Program Assignment 1",0
 instruction BYTE "This Program will perform a series of opperations on the numbers entered and output the result",0
-symbols		BYTE "+-*/",0
 input_Lhs	BYTE "Please enter the left-hand-side value (non-negative integer): ",0
 input_Rhs	BYTE "Please enter the right-hand-side value (positive integer): ",0
 goodbye		BYTE "Thank you, have a nice day",0
@@ -26,7 +25,7 @@ Rhs			DWORD ? ;RIGHT HAND SIDE ARGUMENT
 
 ;//////////////////////////OPERATION RESULTS/////////////////////////////////
 mSum		DWORD ?
-mDiff		SDWORD ?  ; only result of two positive numbers that can be negative
+mDiff		DWORD ? 
 mProduct	DWORD ?
 mQuotient	DWORD ?
 mRemainder	DWORD ?
@@ -133,7 +132,7 @@ main PROC
 	call WriteString		;display right hand side argument
 
 	mov eax, mDiff
-	call WriteInt			;display result of operation
+	call WriteDec			;display result of operation
 	call crlf
 
 ;//////////DISPLAY PRODUCT/////////////////////////////
