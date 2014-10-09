@@ -18,6 +18,7 @@ instruction BYTE "This Program will perform a series of opperations on the numbe
 			BYTE "Requirments LHS <= RHS ,  0<LHS , 0<RHS",0
 input_Lhs	BYTE "Please enter the left-hand-side value: ",0
 input_Rhs	BYTE "Please enter the right-hand-side value: ",0
+bad_input	BYTE "Positive numbers less than 3^32-1 only please",0
 
 again		BYTE "Would you like to perorm these operations on different numbers?",0
 yesNo		BYTE "press 'y' for yes, any other key will exit",0
@@ -78,17 +79,49 @@ GET_NUMBERS: ;###################################
 
 ;///////////RETRIEVE INPUT/// LHS ////////////////////
 	call ReadDec
-	mov  Lhs, eax	;store input
 	
+;//////////CHECK FOR BAD INPUT/////////////////////////
+	
+	;because assignment spec requested verifying lhs>rhs and
+	;div by 0 is an illegal operation, neither of our values can be 0
+	;checking this also covers the cases of Alpha Input, blank input, and overflow
+	
+	test eax,eax			;zf set if eax==0
+	je badInputlhs			;IF eax==0 
+							;ELSE
+	mov  Lhs, eax			;store input
+	jmp GET_NUMBERS_RHS		;eax valid, continue to next input
+
+badInputLhs:
+	mov edx, OFFSET bad_input
+	call WriteString
+	call crlf
+	jmp GET_NUMBERS
 
 ;////////////PROMPT INPUT//// RHS ////////////////////
+GET_NUMBERS_RHS:
+
 	mov	edx,OFFSET	input_Rhs
 	call WriteString
 	call crlf
 ;///////////RETRIEVE INPUT/// RHS ////////////////////
 	call ReadDec
-	mov  Rhs, eax	;store input
 
+	;//////////CHECK FOR BAD INPUT/////////////////////////	
+	test eax,eax			;zf set if eax==0
+	je badInputRhs			;IF eax==0 
+							;ELSE
+	mov  Rhs, eax			;store input
+	jmp COMPARE_OPS			;eax valid, continue to rhs<lhs validation
+
+badInputRhs:
+	mov edx, OFFSET bad_input
+	call WriteString
+	call crlf
+	jmp GET_NUMBERS_RHS
+
+
+COMPARE_OPS:
 ;///////// ASSERTING RHS <= LHS //////////////////////
 	mov eax,rhs
 	cmp eax,lhs	  ;Checking rhs>lhs
