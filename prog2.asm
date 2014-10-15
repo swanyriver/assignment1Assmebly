@@ -24,28 +24,60 @@ mumPrompt_s     BYTE    "How many terms would you like to see: ",0
 farewell_s      BYTE    "Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
 
+;/////////////ERROR STRINGS//////////////////////////
+nameTooLong_s   BYTE    "The name you entered was too long", 13,10 
+                BYTE    "less than 40 characters please",13,10,0
+outOfRange_s    BYTE    "please keep your input greater than 0 and less than 47",13,10,0
+
+
 ;/////////////USER INPUT VARIABLES//////////////////
-user_name       BYTE    STRING_MAX dup(?)
-n_terms         BYTE    ?
+userName        BYTE    STRING_MAX dup(?)
+nTerms          BYTE    ?
 
 ;////////////PROGRAM INFORMATION///////////////////
 
 
 .code
 main PROC
-    mov edx, OFFSET intro_s
-    call WriteString
+    call Intro
 
     exit    ; exit to operating system
 main ENDP
 
 
 
-;PROC Intro
+;#################################################
+;PROCEDURE:     Intro
+;
+;Purpose:   print introduction and get users name
+;Recieves:  none
+;Returns:   Users name stored in userName buffer
+;
+;#################################################
+Intro PROC USES edx
     
+    ;//print intro string//
+    mov edx, OFFSET intro_s
+    call WriteString
+
+    ;//print name input prompt//
+    mov edx, OFFSET namePrompt_s
+    call WriteString
+
+getName:
+    ;//get user name//
+
+    ;//verify input//
+
+    ;//print error msg//
+
+welcome:
+    ;//print user welcome//
+
+
     
-;   ret
-;Intro ENDP
+    ret
+Intro ENDP
 
 
 END main
