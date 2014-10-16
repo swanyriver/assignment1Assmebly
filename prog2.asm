@@ -49,11 +49,11 @@ main PROC
     call getUserData
     mov nTerms, al     ;save result
 
-
     ;#############displayFibs#######    ;divided into two procedures
-    movzx ecx, nTerms
-    mov edx, OFFSET fibTemrs
+    movzx ecx, nTerms           ;pass the number of terms to calculate
+    mov edx, OFFSET fibTemrs    ;pass the array address
     call calculate_fibs
+    call display_fibs            ;same preconditions as calculate_fibs, ecx and edx are poped back 
 
     ;ARRAY CHECKING
     ;mov esi, edx
@@ -220,5 +220,27 @@ find_fib:
 
     ret
 calculate_fibs ENDP
+
+;#################################################
+;PROCEDURE:     display fibs 
+;
+;Purpose:   display N Fibonacci numbers
+;Recieves:  N number in ecx
+;           beging address of DWORD array in edx containing n terms
+;Returns:   none
+;
+;#################################################
+display_fibs PROC USES eax ecx edx
+
+show_one_number:
+    mov eax, [edx]      
+    call WriteDec       ;display number
+    call crlf           
+    add edx, TYPE DWORD ;increment array position
+    LOOP show_one_number
+	
+	ret
+display_fibs ENDP
+
 
 END main
