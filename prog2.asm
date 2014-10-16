@@ -11,6 +11,7 @@ LOWER_BOUND = 1     ;input must be greater than or equal to this
 UPPER_BOUND = 46    ;input must be less than or equal this
 STRING_MAX  = 40    ;maximum length of user input strings
 SPACING     = 5
+PER_LINE    = 5
 MAX_SPACING = 14
 
 .data
@@ -236,19 +237,19 @@ calculate_fibs ENDP
 ;#################################################
 display_fibs PROC USES eax ebx ecx edx
 
-    mov ebx, SPACING
+    mov ebx, PER_LINE    ;count terms per line
 
 show_one_number:
-    mov eax, [edx]      
-    call print_fib
+    mov eax, [edx]      ;retrive next element in arry    
+    call print_fib      ;output number with spacing
 
     dec ebx
-    jz return_line
+    jz return_line      ;numbers per line reached
     jmp no_return_line
 
 return_line:
     call crlf
-    mov ebx, SPACING
+    mov ebx, PER_LINE    ;reset numbers line count
 no_return_line:
             
     add edx, TYPE DWORD ;increment array position
@@ -273,14 +274,14 @@ print_fib PROC USES eax ebx ecx edx
     mov ecx,10
     mov ebx, OFFSET spaces_S
 
-reduce_number:
+reduce_number:              ;divides by 10 until number is single digit
     cmp eax,9
     jna all_digits_counted
 
     mov edx,0
     div ecx
 
-    add ebx, TYPE BYTE
+    add ebx, TYPE BYTE      ;one less space displayed
 
     jmp reduce_number
 
@@ -288,7 +289,7 @@ reduce_number:
 all_digits_counted:
     
     mov edx,ebx
-    call WriteString
+    call WriteString        ;display (longest number) - (lenght of this number) + SPACING
     ;call crlf   ;REMOVE
 
     ret
