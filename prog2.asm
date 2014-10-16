@@ -36,7 +36,7 @@ nTerms          BYTE    ?
 
 ;////////////PROGRAM INFORMATION///////////////////
 
-fibTemrs        DWORD   1,1, 44 dup (?)
+fibTemrs        DWORD   UPPER_BOUND dup (?)
 
 
 .code
@@ -54,6 +54,11 @@ main PROC
     movzx ecx, nTerms
     mov edx, OFFSET fibTemrs
     call calculate_fibs
+
+    ;ARRAY CHECKING
+    ;mov esi, edx
+    ;mov ebx, TYPE DWORD
+    ;call dumpMem
 
 
     exit    ; exit to operating system
@@ -177,23 +182,41 @@ getUserData ENDP
 ;Returns:   n numbers of fib terms in array pointed to by edx
 ;
 ;#################################################
-calculate_fibs PROC
-    
-    push edx ;for test
-    push ecx ;for test
+calculate_fibs PROC USES eax ebx ecx edx
+
+;/////////////////////////////////////////////////
+;///filling first two Fibonacci terms 1 and 1 ////
+;/// returning early if 1 or 2 terms requested ///
+;/////////////////////////////////////////////////
 
 
+    mov eax, 1 
+    mov ebx, 1      ;prepare algorithm registers
+
+    mov [edx],eax
+    mov [edx+TYPE DWORD],ebx  ;initialize first two terms
+    add edx, TYPE DWORD * 2 ;adjust array pointer
+
+    sub ecx,2       ;adjust loop counter
+
+    jz leave_early  ;2 terms requested
+    js leave_early  ;less than 2 terms requested
+
+    jmp find_fib
+
+leave_early:    
+    ret
+   
+
+;/////////////////////////////////////////////////
+;//////finding fibonaci terms from 3-N (ecx)//////
+;/////////////////////////////////////////////////
 find_fib:
-    mov [edx],ecx
-    add edx, TYPE DWORD
+    add eax,ebx         ;add terms n-1 and n-2
+    mov [edx], eax      ;store result
+    add edx, TYPE DWORD ;increment array position
+    xchg eax,ebx        ;term n-1 moves to eax and term n to ebx
     LOOP find_fib
-
-    pop ecx
-    pop edx
-
-    mov esi, edx
-    mov ebx, TYPE DWORD
-    call dumpMem
 
     ret
 calculate_fibs ENDP
