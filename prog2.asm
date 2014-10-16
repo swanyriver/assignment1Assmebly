@@ -236,26 +236,19 @@ calculate_fibs ENDP
 ;#################################################
 display_fibs PROC USES eax ebx ecx edx
 
-    mov [spaces_s+TYPE BYTE *2],0
     mov ebx, SPACING
-    
 
 show_one_number:
     mov eax, [edx]      
-    call WriteDec       ;display number
-
-    push edx
-    mov edx, OFFSET spaces_S
-    call WriteString
-    pop edx
+    call print_fib
 
     dec ebx
     jz return_line
-    mov ebx, SPACING
     jmp no_return_line
 
 return_line:
     call crlf
+    mov ebx, SPACING
 no_return_line:
             
     add edx, TYPE DWORD ;increment array position
@@ -277,6 +270,7 @@ print_fib PROC USES eax ebx ecx edx
 
     call WriteDec
 
+    mov ecx,10
     mov ebx, OFFSET spaces_S
 
 reduce_number:
@@ -284,8 +278,7 @@ reduce_number:
     jna all_digits_counted
 
     mov edx,0
-    div 10
-    mov eax,edx
+    div ecx
 
     add ebx, TYPE BYTE
 
@@ -296,6 +289,7 @@ all_digits_counted:
     
     mov edx,ebx
     call WriteString
+    ;call crlf   ;REMOVE
 
     ret
 print_fib ENDP
