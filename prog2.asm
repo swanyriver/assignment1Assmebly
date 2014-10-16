@@ -10,6 +10,8 @@ INCLUDE Irvine32.inc
 LOWER_BOUND = 1     ;input must be greater than or equal to this
 UPPER_BOUND = 46    ;input must be less than or equal this
 STRING_MAX  = 40    ;maximum length of user input strings
+SPACING     = 5
+MAX_SPACING = 14
 
 .data
 
@@ -22,6 +24,7 @@ instruction_s   BYTE    13,10,"You will enter the number of Fibonacci terms you 
 mumPrompt_s     BYTE    13,10,"How many terms would you like to see: ",0
 farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
+spaces_s        BYTE    14 dup('-'),0    ; string of 14 spaces for alignment
 
 ;/////////////ERROR STRINGS//////////////////////////
 noNameEntered   BYTE    "nothing was entered, please try again",13,10,0
@@ -229,18 +232,73 @@ calculate_fibs ENDP
 ;           beging address of DWORD array in edx containing n terms
 ;Returns:   none
 ;
+; ebx conts output per line
 ;#################################################
-display_fibs PROC USES eax ecx edx
+display_fibs PROC USES eax ebx ecx edx
+
+    mov [spaces_s+TYPE BYTE *2],0
+    mov ebx, SPACING
+    
 
 show_one_number:
     mov eax, [edx]      
     call WriteDec       ;display number
-    call crlf           
+
+    push edx
+    mov edx, OFFSET spaces_S
+    call WriteString
+    pop edx
+
+    dec ebx
+    jz return_line
+    mov ebx, SPACING
+    jmp no_return_line
+
+return_line:
+    call crlf
+no_return_line:
+            
     add edx, TYPE DWORD ;increment array position
     LOOP show_one_number
 	
 	ret
 display_fibs ENDP
+
+;#################################################
+;PROCEDURE:     display aligned fib term 
+;               used by displayFibs
+;
+;Purpose:   display single Fibonacci number
+;Recieves:  number in eax
+;Returns:   none
+;
+;#################################################
+print_fib PROC USES eax ebx ecx edx
+
+    call WriteDec
+
+    mov ebx, OFFSET spaces_S
+
+reduce_number:
+    cmp eax,9
+    jna all_digits_counted
+
+    mov edx,0
+    div 10
+    mov eax,edx
+
+    add ebx, TYPE BYTE
+
+    jmp reduce_number
+
+
+all_digits_counted:
+    
+    mov edx,ebx
+    call WriteString
+
+    ret
+print_fib ENDP
 
 
 END main
