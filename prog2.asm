@@ -59,10 +59,7 @@ main PROC
     call calculate_fibs
     call display_fibs            ;same preconditions as calculate_fibs, ecx and edx are poped back 
 
-    ;ARRAY CHECKING
-    ;mov esi, edx
-    ;mov ebx, TYPE DWORD
-    ;call dumpMem
+    call farewell
 
 
     exit    ; exit to operating system
@@ -245,7 +242,7 @@ show_one_number:
 
     dec ebx
     jz return_line      ;numbers per line reached
-    jmp no_return_line
+    jmp no_return_line  ;else
 
 return_line:
     call crlf
@@ -254,7 +251,8 @@ no_return_line:
             
     add edx, TYPE DWORD ;increment array position
     LOOP show_one_number
-	
+
+	call crlf
 	ret
 display_fibs ENDP
 
@@ -294,6 +292,15 @@ all_digits_counted:
 
     ret
 print_fib ENDP
+
+
+farewell PROC USES edx
+    
+    mov edx,OFFSET farewell_s
+    call WriteString
+
+    ret
+farewell ENDP
 
 
 END main
