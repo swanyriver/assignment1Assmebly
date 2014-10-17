@@ -25,7 +25,7 @@ instruction_s   BYTE    13,10,"You will enter the number of Fibonacci terms you 
 mumPrompt_s     BYTE    13,10,"How many terms would you like to see: ",0
 farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
-spaces_s        BYTE    MAX_SPACING dup('-'),0    ; string of spaces for alignment
+spaces_s        BYTE    MAX_SPACING dup(' '),0    ; string of spaces for alignment
 
 ;/////////////ERROR STRINGS//////////////////////////
 noNameEntered   BYTE    "nothing was entered, please try again",13,10,0
@@ -259,15 +259,38 @@ no_return_line:
 display_fibs ENDP
 
 ;#################################################
-;PROCEDURE:    set alignment
+;PROCEDURE:     print fib
+;               used by displayFibs
 ;
+;Purpose:   display single alligneed Fibonacci number
+;Recieves:  number in eax
+;Returns:   none
+;
+;#################################################
+print_fib PROC USES ebx edx
+
+    call WriteDec
+
+    call count_digits
+    add ebx,OFFSET spaces_S   ;load apropiate number of spaces
+
+
+    mov edx,ebx
+    call WriteString        ;display (longest number) - (lenght of this number) + SPACING
+
+    ret
+print_fib ENDP
+
+;#################################################
+;PROCEDURE:    set alignment
+;              used by display_fibs
 ;Purpose:   adjust number of spaces in spaces_s
 ;Recieves:  N number in ecx
 ;           beging address of DWORD array in edx containing n terms
 ;Returns:   none
 ;
 ;#################################################
-set_alignment PROC uses eax ebx ecx edx
+set_alignment PROC USES eax ebx ecx edx
     
     ;//get last term in array
     mov eax, TYPE DWORD
@@ -292,34 +315,11 @@ set_alignment PROC uses eax ebx ecx edx
     ret
 set_alignment ENDP
 
-;#################################################
-;PROCEDURE:     print fib
-;               used by displayFibs
-;
-;Purpose:   display single alligneed Fibonacci number
-;Recieves:  number in eax
-;Returns:   none
-;
-;#################################################
-print_fib PROC USES ebx edx
-
-    call WriteDec
-
-    call count_digits
-    add ebx,OFFSET spaces_S   ;load apropiate number of spaces
-
-
-    mov edx,ebx
-    call WriteString        ;display (longest number) - (lenght of this number) + SPACING
-    ;call crlf   ;REMOVE
-
-    ret
-print_fib ENDP
-
 
 ;#################################################
 ;PROCEDURE:     count digits
 ;               used by print_fib
+;               used by set_alignment
 ;
 ;Purpose:   determine number of digits in a number
 ;Recieves:  number in eax
