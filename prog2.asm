@@ -257,7 +257,7 @@ no_return_line:
 display_fibs ENDP
 
 ;#################################################
-;PROCEDURE:    farewell
+;PROCEDURE:    set alignment
 ;
 ;Purpose:   print a farewell message
 ;Recieves:  none
@@ -280,13 +280,35 @@ display_fibs ENDP
 ;Returns:   none
 ;
 ;#################################################
-print_fib PROC USES eax ebx ecx edx
+print_fib PROC USES ebx edx
 
     call WriteDec
 
-    mov ecx,10
-    mov ebx, OFFSET spaces_S
+    call count_digits
+    add ebx,OFFSET spaces_S   ;load apropiate number of spaces
 
+
+    mov edx,ebx
+    call WriteString        ;display (longest number) - (lenght of this number) + SPACING
+    ;call crlf   ;REMOVE
+
+    ret
+print_fib ENDP
+
+
+;#################################################
+;PROCEDURE:     count digits
+;               used by print_fib
+;
+;Purpose:   determine number of digits in a number
+;Recieves:  number in eax
+;Returns:   number of digits as a factor of TYPE BYTE in ebx
+;
+;#################################################
+count_digits PROC USES ecx eax edx
+
+    mov ebx, 0
+    mov ecx,10  ;divisor
 reduce_number:              ;divides by 10 until number is single digit
     cmp eax,9
     jna all_digits_counted
@@ -298,16 +320,10 @@ reduce_number:              ;divides by 10 until number is single digit
 
     jmp reduce_number
 
-
 all_digits_counted:
-    
-    mov edx,ebx
-    call WriteString        ;display (longest number) - (lenght of this number) + SPACING
-    ;call crlf   ;REMOVE
 
     ret
-print_fib ENDP
-
+count_digits ENDP   
 
 ;#################################################
 ;PROCEDURE:    farewell
