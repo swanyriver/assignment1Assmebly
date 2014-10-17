@@ -234,6 +234,8 @@ calculate_fibs ENDP
 ;#################################################
 display_fibs PROC USES eax ebx ecx edx
 
+    call set_alignment
+
     mov ebx, PER_LINE    ;count terms per line
 
 show_one_number:
@@ -259,17 +261,35 @@ display_fibs ENDP
 ;#################################################
 ;PROCEDURE:    set alignment
 ;
-;Purpose:   print a farewell message
-;Recieves:  none
+;Purpose:   adjust number of spaces in spaces_s
+;Recieves:  N number in ecx
+;           beging address of DWORD array in edx containing n terms
 ;Returns:   none
 ;
 ;#################################################
-;set_alignment PROC
+set_alignment PROC uses eax ebx ecx edx
     
+    ;//get last term in array
+    mov eax, TYPE DWORD
+    dec ecx
+    push edx
+    mul ecx
+    pop edx
+    add edx, eax 
+    mov eax,[edx]           ;eax now contains edx[n] last element
 
+    call crlf
+    call WriteDec
+    call crlf
 
- ;   ret
-;set_alignment ENDP
+    ;//find its length
+
+    ;//add 5 spaces
+
+    ;//terminate spaces string
+
+    ret
+set_alignment ENDP
 
 ;#################################################
 ;PROCEDURE:     print fib
