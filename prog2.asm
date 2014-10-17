@@ -25,7 +25,10 @@ instruction_s   BYTE    13,10,"You will enter the number of Fibonacci terms you 
 mumPrompt_s     BYTE    13,10,"How many terms would you like to see: ",0
 farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
+again           BYTE    13,10,"Would you like to see a different number of terms?",13,10,0
+yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
 spaces_s        BYTE    MAX_SPACING dup(' '),0    ; string of spaces for alignment
+
 
 ;/////////////ERROR STRINGS//////////////////////////
 noNameEntered   BYTE    "nothing was entered, please try again",13,10,0
@@ -39,8 +42,10 @@ userName        BYTE    STRING_MAX+1 dup (?)
 nTerms          BYTE    ?
 
 ;////////////PROGRAM INFORMATION///////////////////
-
 fibTemrs        DWORD   UPPER_BOUND dup (?)
+
+;///////////////////////CONTROL VARIABLE/////////////////////////////////////
+affirm          BYTE  'y'
 
 
 .code
@@ -50,6 +55,7 @@ main PROC
 
     call userInstructions
 
+get_n:
     call getUserData
     mov nTerms, al     ;save result
 
@@ -57,7 +63,10 @@ main PROC
     movzx ecx, nTerms           ;pass the number of terms to calculate
     mov edx, OFFSET fibTemrs    ;pass the array address
     call calculate_fibs
-    call display_fibs            ;same preconditions as calculate_fibs, ecx and edx are poped back 
+    call display_fibs           ;same preconditions as calculate_fibs, ecx and edx are poped back 
+
+    call check_repeat           ;sets zero flag if use wants to repeat
+    je get_n                    ;return to getUserData
 
     call farewell
 
@@ -292,6 +301,17 @@ print_fib ENDP
 ;#################################################
 set_alignment PROC USES eax ebx ecx edx
     
+    ;////reseting spacing string after a repeat
+    push ecx
+    mov ecx,MAX_SPACING
+    mov ebx,OFFSET spaces_S
+    mov al, ' '
+fill_spaces:
+    mov [ebx],al
+    inc ebx
+    LOOP fill_spaces
+    pop ecx
+
     ;//get last term in array
     mov eax, TYPE DWORD
     dec ecx
@@ -345,6 +365,28 @@ all_digits_counted:
 
     ret
 count_digits ENDP   
+
+;#################################################
+;PROCEDURE:     check for repeat
+;
+;Purpose:   ask user if they would like to repeat
+;Recieves:  none
+;Returns:   zero flag set if affirmative
+;
+;#################################################
+check_repeat PROC USES edx eax
+
+    mov edx, OFFSET again
+    call WriteString        ;display prompt to repeat
+    mov edx, OFFSET yesNo
+    call Writestring        ;display input instructions
+
+    call Readchar           ;get single character from keyboard
+    cmp al, affirm          ;check for char=='y'
+
+    ret
+check_repeat ENDP
+
 
 ;#################################################
 ;PROCEDURE:    farewell
