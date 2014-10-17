@@ -12,7 +12,7 @@ UPPER_BOUND = 46    ;input must be less than or equal this
 STRING_MAX  = 40    ;maximum length of user input strings
 SPACING     = 5     ;minimum spaces between numbers
 PER_LINE    = 5     ;number of terms to display per line
-MAX_SPACING = 14    ;longest number - 1 (all numbers at least single digit) + SPACING 
+MAX_SPACING = 15    ;longest number + SPACING 
 
 .data
 
@@ -25,7 +25,7 @@ instruction_s   BYTE    13,10,"You will enter the number of Fibonacci terms you 
 mumPrompt_s     BYTE    13,10,"How many terms would you like to see: ",0
 farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
-spaces_s        BYTE    14 dup('-'),0    ; string of 14 spaces for alignment
+spaces_s        BYTE    MAX_SPACING dup('-'),0    ; string of spaces for alignment
 
 ;/////////////ERROR STRINGS//////////////////////////
 noNameEntered   BYTE    "nothing was entered, please try again",13,10,0
@@ -278,15 +278,16 @@ set_alignment PROC uses eax ebx ecx edx
     add edx, eax 
     mov eax,[edx]           ;eax now contains edx[n] last element
 
-    call crlf
-    call WriteDec
-    call crlf
-
     ;//find its length
+    call count_digits       ;length of longest number in ebx
 
     ;//add 5 spaces
+    add ebx,SPACING
 
     ;//terminate spaces string
+    add ebx,OFFSET spaces_S     ;pointer to spaces string plus digit+spacing bytes
+    mov eax,0
+    mov [ebx],eax                   
 
     ret
 set_alignment ENDP
@@ -322,12 +323,12 @@ print_fib ENDP
 ;
 ;Purpose:   determine number of digits in a number
 ;Recieves:  number in eax
-;Returns:   number of digits as a factor of TYPE BYTE in ebx
+;Returns:   number of digits in ebx
 ;
 ;#################################################
 count_digits PROC USES ecx eax edx
 
-    mov ebx, 0
+    mov ebx, 1
     mov ecx,10  ;divisor
 reduce_number:              ;divides by 10 until number is single digit
     cmp eax,9
@@ -336,7 +337,7 @@ reduce_number:              ;divides by 10 until number is single digit
     mov edx,0
     div ecx
 
-    add ebx, TYPE BYTE      ;one less space displayed
+    inc ebx ;one more digit
 
     jmp reduce_number
 
