@@ -1,8 +1,8 @@
 TITLE Program Template     (template.asm)
 
 ; Author:Brandon Swanson
-; Course / Project ID                 Date:
-; Description:
+; Course / Project ID   CS271-400 Fall14 Programming Assignment #2  Date: 10/17/14
+; Description: Will calculate n number of Fibonacci terms and display them in a neatly aligned format
 
 INCLUDE Irvine32.inc
 
@@ -10,9 +10,9 @@ INCLUDE Irvine32.inc
 LOWER_BOUND = 1     ;input must be greater than or equal to this
 UPPER_BOUND = 46    ;input must be less than or equal this
 STRING_MAX  = 40    ;maximum length of user input strings
-SPACING     = 5
-PER_LINE    = 5
-MAX_SPACING = 14
+SPACING     = 5     ;minimum spaces between numbers
+PER_LINE    = 5     ;number of terms to display per line
+MAX_SPACING = 14    ;longest number - 1 (all numbers at least single digit) + SPACING 
 
 .data
 
@@ -257,10 +257,25 @@ no_return_line:
 display_fibs ENDP
 
 ;#################################################
-;PROCEDURE:     display aligned fib term 
+;PROCEDURE:    farewell
+;
+;Purpose:   print a farewell message
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+;set_alignment PROC
+    
+
+
+ ;   ret
+;set_alignment ENDP
+
+;#################################################
+;PROCEDURE:     print fib
 ;               used by displayFibs
 ;
-;Purpose:   display single Fibonacci number
+;Purpose:   display single alligneed Fibonacci number
 ;Recieves:  number in eax
 ;Returns:   none
 ;
@@ -294,6 +309,14 @@ all_digits_counted:
 print_fib ENDP
 
 
+;#################################################
+;PROCEDURE:    farewell
+;
+;Purpose:   print a farewell message
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
 farewell PROC USES edx
     
     mov edx,OFFSET farewell_s
