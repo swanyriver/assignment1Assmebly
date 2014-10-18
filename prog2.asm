@@ -44,7 +44,7 @@ nTerms          BYTE    ?
 fibTemrs        DWORD   UPPER_BOUND dup (?)
 
 ;///////////////////USED FOR ALIGNMENT////////////
-spaces_needed   DWORD    ?
+spaces_needed   BYTE    ?
 
 ;///////////////////////CONTROL VARIABLE//////////
 affirm          BYTE    'y'
@@ -284,11 +284,11 @@ print_fib PROC USES eax ebx
 
     call count_digits
     
-    mov al,'-'
+    mov al,' '
 print_space:
     call WriteChar
-    inc ebx
-    cmp ebx,spaces_needed
+    inc bl
+    cmp bl,spaces_needed
     jne print_space
 
 
@@ -319,10 +319,10 @@ set_alignment PROC USES eax ebx ecx edx
     call count_digits       ;length of longest number in ebx
 
     ;//add 5 spaces
-    add ebx,SPACING
+    add bl,SPACING
     
     ;//save as spaces needed
-    mov spaces_needed,ebx                
+    mov spaces_needed,bl                
 
     ret
 set_alignment ENDP
@@ -335,12 +335,12 @@ set_alignment ENDP
 ;
 ;Purpose:   determine number of digits in a number
 ;Recieves:  number in eax
-;Returns:   number of digits in ebx
+;Returns:   number of digits in bl
 ;
 ;#################################################
 count_digits PROC USES ecx eax edx
 
-    mov ebx, 1
+    mov bl, 1
     mov ecx,10  ;divisor
 reduce_number:              ;divides by 10 until number is single digit
     cmp eax,9
@@ -349,7 +349,7 @@ reduce_number:              ;divides by 10 until number is single digit
     mov edx,0
     div ecx
 
-    inc ebx ;one more digit
+    inc bl ;one more digit
 
     jmp reduce_number
 
