@@ -3,6 +3,7 @@ TITLE Program Template     (template.asm)
 ; Author:Brandon Swanson
 ; Course / Project ID   CS271-400 Fall14 Programming Assignment #2  Date: 10/17/14
 ; Description: Will calculate n number of Fibonacci terms and display them in a neatly aligned format
+;              will adjust collumns to leave a minimum of 5 spaces folowing the longest number
 
 INCLUDE Irvine32.inc
 
@@ -44,7 +45,7 @@ nTerms          BYTE    ?
 fibTemrs        DWORD   UPPER_BOUND dup (?)
 
 ;///////////////////USED FOR ALIGNMENT////////////
-spaces_needed   BYTE    ?
+spaces_needed   BYTE    ? ;calculated each time as longest numbers digits + SPACING
 
 ;///////////////////////CONTROL VARIABLE//////////
 affirm          BYTE    'y'
@@ -280,16 +281,16 @@ display_fibs ENDP
 ;#################################################
 print_fib PROC USES eax ebx
 
-    call WriteDec
+    call WriteDec       ;display number passed to EAX
 
-    call count_digits
+    call count_digits   ;retrive number of digits in bl
     
-    mov al,' '
+    mov al,' '          ;mov space to register used by WriteChar
 print_space:
     call WriteChar
     inc bl
     cmp bl,spaces_needed
-    jne print_space
+    jne print_space     ;print spaces until ready for next number
 
 
     ret
