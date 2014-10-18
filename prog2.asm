@@ -27,7 +27,6 @@ farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
 again           BYTE    13,10,"Would you like to see a different number of terms?",13,10,0
 yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
-spaces_s        BYTE    MAX_SPACING dup(' '),0    ; string of spaces for alignment
 
 
 ;/////////////ERROR STRINGS//////////////////////////
@@ -44,8 +43,11 @@ nTerms          BYTE    ?
 ;////////////PROGRAM INFORMATION///////////////////
 fibTemrs        DWORD   UPPER_BOUND dup (?)
 
-;///////////////////////CONTROL VARIABLE/////////////////////////////////////
-affirm          BYTE  'y'
+;///////////////////USED FOR ALIGNMENT////////////
+spaces_needed   DWORD    ?
+
+;///////////////////////CONTROL VARIABLE//////////
+affirm          BYTE    'y'
 
 
 .code
@@ -276,16 +278,19 @@ display_fibs ENDP
 ;Returns:   none
 ;
 ;#################################################
-print_fib PROC USES ebx edx
+print_fib PROC USES eax ebx
 
     call WriteDec
 
     call count_digits
-    add ebx,OFFSET spaces_S   ;load apropiate number of spaces
+    
+    mov al,'-'
+print_space:
+    call WriteChar
+    inc ebx
+    cmp ebx,spaces_needed
+    jne print_space
 
-
-    mov edx,ebx
-    call WriteString        ;display (longest number) - (lenght of this number) + SPACING
 
     ret
 print_fib ENDP
@@ -300,17 +305,6 @@ print_fib ENDP
 ;
 ;#################################################
 set_alignment PROC USES eax ebx ecx edx
-    
-    ;////reseting spacing string after a repeat
-    push ecx
-    mov ecx,MAX_SPACING
-    mov ebx,OFFSET spaces_S
-    mov al, ' '
-fill_spaces:
-    mov [ebx],al
-    inc ebx
-    LOOP fill_spaces
-    pop ecx
 
     ;//get last term in array
     mov eax, TYPE DWORD
@@ -326,11 +320,9 @@ fill_spaces:
 
     ;//add 5 spaces
     add ebx,SPACING
-
-    ;//terminate spaces string
-    add ebx,OFFSET spaces_S     ;pointer to spaces string plus digit+spacing bytes
-    mov eax,0
-    mov [ebx],eax                   
+    
+    ;//save as spaces needed
+    mov spaces_needed,ebx                
 
     ret
 set_alignment ENDP
