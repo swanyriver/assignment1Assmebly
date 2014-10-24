@@ -53,9 +53,16 @@ main PROC
 get_numbers:
 
     call accumulate
+    mov final_total, ecx    ;returned acumulation
+    mov num_values, ebx     ;returned num values
 
-    call check_repeat           ;sets zero flag if use wants to repeat
-    je get_numbers                    ;return to getUserData
+    mov eax, final_total
+    call WriteDec
+
+
+
+    call check_repeat       ;sets zero flag if user wants to repeat
+    je get_numbers          ;return to a new acumulation
 
     call farewell
 
@@ -155,24 +162,16 @@ nextNum:
     
     inc ebx     ;pre increment num_values counter for display Purpose
 
-    ;display input prompt with number
-    mov edx, OFFSET mumPrompt_s
-    call WriteString
-    mov eax, ebx
-    call WriteDec
-    mov al, ':'
-    call WriteChar
-    mov al, ' '
-    call WriteChar
-
-
     call getNextNum     ;validated input returned in eax
 
-    add ecx,eax
-    call dumpregs
+    test eax,eax
+    js leaveProc        ;inputed number is negative
+
+    add ecx, eax        ;newly input number added to total
     jmp nextNum
 
-
+leaveProc:
+    dec ebx             ;last number was the negative
     ret
 accumulate ENDP
 
@@ -182,7 +181,7 @@ accumulate ENDP
 ;Purpose:   call input procedure and verify
 ;               -in bounds
 ;               -valid input
-;Recieves:  none
+;Recieves:  num of input in ebx
 ;Returns:   value in eax
 ;
 ;#################################################
@@ -199,7 +198,17 @@ outofBounds:
     call WriteDec
     call crlf
 
-input:    
+input: 
+    ;display input prompt with number
+    mov edx, OFFSET mumPrompt_s
+    call WriteString
+    mov eax, ebx
+    call WriteDec
+    mov al, ':'
+    call WriteChar
+    mov al, ' '
+    call WriteChar
+
     call ReadInt
 
     jo input            ;overflow indicated invalid input
