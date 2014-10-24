@@ -19,7 +19,7 @@ intro_s         BYTE    "The Acumulator",13,10
 namePrompt_s    BYTE    "What is your name: ",0
 instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
 instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
-mumPrompt_s     BYTE    "number ",0
+mumPrompt_s     BYTE    "input number ",0
 farewell_s      BYTE    13,10,"Come back soon ",0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
 yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
@@ -34,7 +34,10 @@ outOfRange_s    BYTE    "please keep your input less than or equal to ",0 ;const
 welcome_s       BYTE    13,10,"Welcome to The Acumulator "     
                 ;user name will become concatenated with welcome string
 userName        BYTE    STRING_MAX+1 dup (?)
-nTerms          BYTE    ?
+
+;/////////////PROGRAM DATA/////////////////////////
+final_total     DWORD   ?
+num_values      DWORD   ?
 
 ;///////////////////////CONTROL VARIABLE//////////
 affirm          BYTE    'y'
@@ -49,7 +52,7 @@ main PROC
 
 get_numbers:
 
-
+    call accumulate
 
     call check_repeat           ;sets zero flag if use wants to repeat
     je get_numbers                    ;return to getUserData
@@ -136,15 +139,42 @@ userInstructions PROC USES edx
 userInstructions ENDP 
 
 ;#################################################
-;PROCEDURE:     
+;PROCEDURE:     Acumulate inputed numbers
 ;Purpose:   
 ;Recieves:  none
-;Returns:   value in eax
+;Returns:   value in ecx, count of entries in ebx
 ;
 ;#################################################
-;PROC
-;    ret
-;ENDP
+accumulate PROC USES eax
+    ;initialze registers for acumation and counting terms
+    mov ebx,0
+    mov ecx,0
+
+    ;do ... while (eax >= 0)
+nextNum:
+    
+    inc ebx     ;pre increment num_values counter for display Purpose
+
+    ;display input prompt with number
+    mov edx, OFFSET mumPrompt_s
+    call WriteString
+    mov eax, ebx
+    call WriteDec
+    mov al, ':'
+    call WriteChar
+    mov al, ' '
+    call WriteChar
+
+
+    call getNextNum     ;validated input returned in eax
+
+    add ecx,eax
+    call dumpregs
+    jmp nextNum
+
+
+    ret
+accumulate ENDP
 
 ;#################################################
 ;PROCEDURE:     get next number
