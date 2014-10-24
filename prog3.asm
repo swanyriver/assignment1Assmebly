@@ -24,6 +24,7 @@ input_total_s   BYTE    "you entered ",0
 numbers_s       BYTE    " numbers",13,10,0
 sum_total_s     BYTE    "all adding up to: ",0
 average_s       BYTE    "with a rounded average of: ",0
+no_values_s     BYTE    "you didn't enter any positive numbers",13,10,0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
 yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
 farewell_s      BYTE    13,10,"Come back soon ",0
@@ -58,15 +59,28 @@ main PROC
 get_numbers:
 
     call accumulate
+
+    ;////check for no input
+    test ebx, ebx
+    jz no_input
+
+    ;//store results of acumulation
     mov final_total, ecx    ;returned acumulation
     mov num_values, ebx     ;returned num values
+
 
     call calcRoundAverage
     mov rounded_average,eax ;returned average
 
     call outputResults      ;displays sum, num input, and average rounded
 
-    call check_repeat       ;sets zero flag if user wants to repeat
+    jmp go_again               ;skip no input message
+no_input:
+    mov edx, OFFSET no_values_s
+    call WriteString
+
+go_again:
+    call checkRepeat        ;sets zero flag if user wants to repeat
     je get_numbers          ;return to a new acumulation
 
     call farewell
@@ -304,7 +318,7 @@ outputResults ENDP
 ;Returns:   zero flag set if affirmative
 ;
 ;#################################################
-check_repeat PROC USES edx eax
+checkRepeat PROC USES edx eax
 
     mov edx, OFFSET again
     call WriteString        ;display prompt to repeat
@@ -315,7 +329,7 @@ check_repeat PROC USES edx eax
     cmp al, affirm          ;check for char=='y'
 
     ret
-check_repeat ENDP
+checkRepeat ENDP
 
 
 ;#################################################
