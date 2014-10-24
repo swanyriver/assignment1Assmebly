@@ -20,11 +20,11 @@ namePrompt_s    BYTE    "What is your name: ",0
 instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
 instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
 mumPrompt_s     BYTE    "input number ",0
-input_total_s   BYTE    "you entered ",0
+input_total_s   BYTE    13,10,"you entered ",0
 numbers_s       BYTE    " numbers",13,10,0
 sum_total_s     BYTE    "all adding up to: ",0
 average_s       BYTE    "with a rounded average of: ",0
-no_values_s     BYTE    "you didn't enter any positive numbers",13,10,0
+no_values_s     BYTE    13,10,"you didn't enter any positive numbers",13,10,0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
 yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
 farewell_s      BYTE    13,10,"Come back soon ",0
@@ -62,22 +62,22 @@ get_numbers:
 
     ;////check for no input
     test ebx, ebx
-    jz no_input
+    jnz succesful_input
 
+    mov edx, OFFSET no_values_s
+    call WriteString        ;no input message
+    jmp go_again            ;skip calculations and display
+
+succesful_input:
     ;//store results of acumulation
     mov final_total, ecx    ;returned acumulation
     mov num_values, ebx     ;returned num values
 
 
-    call calcRoundAverage
+    call calcRoundAverage       
     mov rounded_average,eax ;returned average
 
-    call outputResults      ;displays sum, num input, and average rounded
-
-    jmp go_again               ;skip no input message
-no_input:
-    mov edx, OFFSET no_values_s
-    call WriteString
+    call outputResults      ;displays sum, num input, and average rounded    
 
 go_again:
     call checkRepeat        ;sets zero flag if user wants to repeat
