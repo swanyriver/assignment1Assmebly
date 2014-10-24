@@ -61,7 +61,10 @@ get_numbers:
     mov final_total, ecx    ;returned acumulation
     mov num_values, ebx     ;returned num values
 
-    call output_vals        ;displays sum, num input, and average rounded
+    call calcRoundAverage
+    mov rounded_average,eax ;returned average
+
+    call outputResults      ;displays sum, num input, and average rounded
 
     call check_repeat       ;sets zero flag if user wants to repeat
     je get_numbers          ;return to a new acumulation
@@ -222,13 +225,46 @@ input:
 getNextNum  ENDP
 
 ;#################################################
+;PROCEDURE:     caculate rounded average   
+;Purpose:   find the rounded average of the inputed numbers
+;Recieves:  none    accesses final_total and num_values
+;Returns:   rounded average in eax
+;
+;#################################################
+calcRoundAverage PROC USES edx
+
+    mov ebx, num_values     ;to be used in division and later divided by 2 and compared to remainder
+    
+    mov eax, final_total    ;prepare dividend
+    cdq                     ;fill edx with 0s
+
+    div ebx                 ;perform division
+
+    ;////////////////////////////////////////
+    ;////rounding algorithm/////////////////
+    ;///////////////////////////////////////
+        ; the previous operation peformed floor on the theoretical floating results
+        ; if the remainder is greater than half of the divisor (num_values/2)
+        ; then it ought be rounded up instead of down and eax will be incremented
+
+    shr ebx, 1              ;divide divisor by 2
+    cmp edx, ebx
+
+    jng leaveProc
+
+    inc eax ; round up edx > ebx  meaning remainder is more than half the divisor
+
+leaveProc:
+    ret
+calcRoundAverage ENDP
+;#################################################
 ;PROCEDURE:     output   
 ;Purpose:   display the final results
 ;Recieves:  none    accesses final_total and num_values
 ;Returns:   none
 ;
 ;#################################################
-output_vals PROC USES edx eax
+outputResults PROC USES edx eax
 
     ;/////////////NUMBER OF INPUT////////
 
@@ -258,7 +294,7 @@ output_vals PROC USES edx eax
     call crlf
 
     ret
-output_vals ENDP
+outputResults ENDP
 
 ;#################################################
 ;PROCEDURE:     check for repeat
