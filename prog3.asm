@@ -20,8 +20,7 @@ namePrompt_s    BYTE    "What is your name: ",0
 instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
 instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
 mumPrompt_s     BYTE    "number ",0
-farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
-                BYTE    "-Brandon",13,10,0
+farewell_s      BYTE    13,10,"Come back soon ",0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
 yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
 
@@ -137,6 +136,17 @@ userInstructions PROC USES edx
 userInstructions ENDP 
 
 ;#################################################
+;PROCEDURE:     
+;Purpose:   
+;Recieves:  none
+;Returns:   value in eax
+;
+;#################################################
+;PROC
+;    ret
+;ENDP
+
+;#################################################
 ;PROCEDURE:     get next number
 ;
 ;Purpose:   call input procedure and verify
@@ -171,6 +181,17 @@ input:
 getNextNum  ENDP
 
 ;#################################################
+;PROCEDURE:     
+;Purpose:   
+;Recieves:  none
+;Returns:   value in eax
+;
+;#################################################
+;PROC
+;    ret
+;ENDP
+
+;#################################################
 ;PROCEDURE:     check for repeat
 ;
 ;Purpose:   ask user if they would like to repeat
@@ -195,15 +216,20 @@ check_repeat ENDP
 ;#################################################
 ;PROCEDURE:    farewell
 ;
-;Purpose:   print a farewell message
+;Purpose:   print a farewell message and users name
 ;Recieves:  none
 ;Returns:   none
 ;
 ;#################################################
 farewell PROC USES edx
     
-    mov edx,OFFSET farewell_s
+    mov edx,OFFSET farewell_s 
     call WriteString
+
+    mov edx,OFFSET userName
+    call Writestring
+
+    call crlf
 
     ret
 farewell ENDP
