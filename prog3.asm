@@ -21,7 +21,7 @@ instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
 instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
 mumPrompt_s     BYTE    "input number ",0
 input_total_s   BYTE    "you entered ",0
-numbers_s       BYTE    " numbers",0,13,10
+numbers_s       BYTE    " numbers",13,10,0
 sum_total_s     BYTE    "all adding up to: ",0
 average_s       BYTE    "with a rounded average of: ",0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
@@ -42,6 +42,7 @@ userName        BYTE    STRING_MAX+1 dup (?)
 ;/////////////PROGRAM DATA/////////////////////////
 final_total     DWORD   ?
 num_values      DWORD   ?
+rounded_average DWORD   ?
 
 ;///////////////////////CONTROL VARIABLE//////////
 affirm          BYTE    'y'
@@ -227,7 +228,35 @@ getNextNum  ENDP
 ;Returns:   none
 ;
 ;#################################################
-output_vals PROC
+output_vals PROC USES edx eax
+
+    ;/////////////NUMBER OF INPUT////////
+
+    mov edx, OFFSET input_total_s
+    call Writestring
+
+    mov eax, num_values
+    call WriteDec
+
+    mov edx, OFFSET numbers_s
+    call Writestring
+
+    ;/////////////GRAND TOTAL///////////
+    mov edx, OFFSET sum_total_s
+    call Writestring
+
+    mov eax, final_total
+    call WriteDec
+    call crlf
+
+    ;/////////////ROUNDED AVERAGE///////
+    mov edx, OFFSET average_s
+    call Writestring
+
+    mov eax, rounded_average
+    call WriteDec
+    call crlf
+
     ret
 output_vals ENDP
 
