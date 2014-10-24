@@ -20,9 +20,13 @@ namePrompt_s    BYTE    "What is your name: ",0
 instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
 instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
 mumPrompt_s     BYTE    "input number ",0
-farewell_s      BYTE    13,10,"Come back soon ",0
+input_total_s   BYTE    "you entered ",0
+numbers_s       BYTE    " numbers",0,13,10
+sum_total_s     BYTE    "all adding up to: ",0
+average_s       BYTE    "with a rounded average of: ",0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
 yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
+farewell_s      BYTE    13,10,"Come back soon ",0
 
 
 ;/////////////ERROR STRINGS//////////////////////////
@@ -56,10 +60,7 @@ get_numbers:
     mov final_total, ecx    ;returned acumulation
     mov num_values, ebx     ;returned num values
 
-    mov eax, final_total
-    call WriteDec
-
-
+    call output_vals        ;displays sum, num input, and average rounded
 
     call check_repeat       ;sets zero flag if user wants to repeat
     je get_numbers          ;return to a new acumulation
@@ -220,15 +221,15 @@ input:
 getNextNum  ENDP
 
 ;#################################################
-;PROCEDURE:     
-;Purpose:   
-;Recieves:  none
-;Returns:   value in eax
+;PROCEDURE:     output   
+;Purpose:   display the final results
+;Recieves:  none    accesses final_total and num_values
+;Returns:   none
 ;
 ;#################################################
-;PROC
-;    ret
-;ENDP
+output_vals PROC
+    ret
+output_vals ENDP
 
 ;#################################################
 ;PROCEDURE:     check for repeat
