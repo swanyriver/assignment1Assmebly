@@ -50,8 +50,7 @@ main PROC
 
 get_numbers:
 
-    
-    
+
 
     call check_repeat           ;sets zero flag if use wants to repeat
     je get_numbers                    ;return to getUserData
@@ -137,7 +136,39 @@ userInstructions PROC USES edx
     ret
 userInstructions ENDP 
 
+;#################################################
+;PROCEDURE:     get next number
+;
+;Purpose:   call input procedure and verify
+;               -in bounds
+;               -valid input
+;Recieves:  none
+;Returns:   value in eax
+;
+;#################################################
+getNextNum  PROC USES edx
 
+; do{ call readint } while(invalid || above UPPER_BOUND)
+jmp input
+outofBounds:
+    ;//load error message and UPPER_BOUND value
+    mov edx, OFFSET outOfRange_s
+    mov eax, UPPER_BOUND
+    ;/display message and UPPER_BOUND
+    call WriteString
+    call WriteDec
+    call crlf
+
+input:    
+    call ReadInt
+
+    jo input            ;overflow indicated invalid input
+
+    cmp eax, UPPER_BOUND
+    jg outofBounds      ;input>UPPER_BOUND
+
+    ret                 ;input is valid and less than UPPER_BOUND retruning
+getNextNum  ENDP
 
 ;#################################################
 ;PROCEDURE:     check for repeat
