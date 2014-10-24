@@ -8,7 +8,7 @@ TITLE assingment 3     (prog3.asm)
 INCLUDE Irvine32.inc
 
 ;////////////////PROGRAM CONSTANTS//////////////////
-UPPER_BOUND = 46    ;input must be less than or equal this
+UPPER_BOUND = 100    ;input must be less than or equal this
 STRING_MAX  = 40    ;maximum length of user input strings
 
 .data
@@ -17,9 +17,9 @@ STRING_MAX  = 40    ;maximum length of user input strings
 intro_s         BYTE    "The Acumulator",13,10
                 BYTE    "Programed by Brandon Swanson",13,10,0
 namePrompt_s    BYTE    "What is your name: ",0
-instruction_s   BYTE    13,10,"INTRUCTION LINE 1",13,10
-                BYTE    "INTRUCTION LINE 2",13,10,13,10,0
-mumPrompt_s     BYTE    " ",0
+instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
+instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
+mumPrompt_s     BYTE    "number ",0
 farewell_s      BYTE    13,10,"Thank you for using my program" ,13,10
                 BYTE    "-Brandon",13,10,0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
@@ -37,9 +37,6 @@ welcome_s       BYTE    13,10,"Welcome to The Acumulator "
 userName        BYTE    STRING_MAX+1 dup (?)
 nTerms          BYTE    ?
 
-;////////////PROGRAM INFORMATION///////////////////
-
-
 ;///////////////////////CONTROL VARIABLE//////////
 affirm          BYTE    'y'
 
@@ -52,6 +49,8 @@ main PROC
     call userInstructions
 
 get_numbers:
+
+    
     
 
     call check_repeat           ;sets zero flag if use wants to repeat
@@ -123,8 +122,16 @@ Intro ENDP
 ;#################################################
 userInstructions PROC USES edx
     
-    ;//display instructions//
+    ;//display instructions line 1//
     mov edx, OFFSET instruction_s
+    call WriteString
+
+    ;//display UPPER_BOUND
+    mov eax, UPPER_BOUND
+    call WriteDec
+
+    ;//display instructions about negatgive termination//
+    mov edx, OFFSET instruction2_s
     call WriteString
 
     ret
