@@ -2,8 +2,10 @@ TITLE assingment 3     (prog3.asm)
 
 ; Author:Brandon Swanson  swansonb@onid.orst.edu
 ; Course / Project ID   CS271-400 Fall14 Programming Assignment #3  Date: 11/02/14
-; Description: this program will repeatdly ask the user to enter numbers below the defined 
-;               UPPER_BOUND until a negative is entered at wich time the sum and average will be displayed
+; Description: This program will repeatdly ask the user to enter numbers below the defined 
+;              UPPER_BOUND until a negative is entered at wich time the sum and average will be displayed.
+; extra credit: Lines are numbered during user input.
+;               Average is displayed as a floating point.
 
 INCLUDE Irvine32.inc
 
@@ -54,9 +56,9 @@ main PROC
 
     call Intro
 
-    call userInstructions
-
 get_numbers:
+
+    call userInstructions
 
     call accumulate
 
@@ -264,9 +266,9 @@ calcRoundAverage PROC USES edx
     shr ebx, 1              ;divide divisor by 2
     cmp edx, ebx
 
-    jng leaveProc
+    jb leaveProc   ;dont round up, remainder less than half divisor
 
-    inc eax ; round up edx > ebx  meaning remainder is more than half the divisor
+    inc eax ; round up edx > ebx  meaning remainder is more than or equal half the divisor
 
 leaveProc:
     ret
