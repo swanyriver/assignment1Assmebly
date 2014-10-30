@@ -20,15 +20,17 @@ intro_s         BYTE    "The Acumulator",13,10
                 BYTE    "Programed by Brandon Swanson",13,10,0
 namePrompt_s    BYTE    "What is your name: ",0
 instruction_s   BYTE    13,10,"Please enter numbers less than or equal to ",0
-instruction2_s  BYTE    13,10, "Enter a negative number to signal that you are finished",13,10,13,10,0
-mumPrompt_s     BYTE    "input number ",0
-input_total_s   BYTE    13,10,"you entered ",0
+instruction2_s  BYTE    13,10, "Or enter a negative number to signal that you are finished",13,10,13,10,0
+overflow_s      BYTE    "The number you have entered would cause my 32-bit register to overflow", 13,10
+                BYTE    "So please enter a number less than ",0
+mumPrompt_s     BYTE    "Input Number ",0
+input_total_s   BYTE    13,10,"You entered ",0
 numbers_s       BYTE    " numbers",13,10,0
-sum_total_s     BYTE    "all adding up to: ",0
-average_s       BYTE    "with a rounded average of: ",0
-no_values_s     BYTE    13,10,"you didn't enter any positive numbers",13,10,0
+sum_total_s     BYTE    "All adding up to: ",0
+average_s       BYTE    "With a rounded average of: ",0
+no_values_s     BYTE    13,10,"You didn't enter any positive numbers",13,10,0
 again           BYTE    13,10,"Would you like to perform these operations again?",13,10,0
-yesNo           BYTE    "press 'y' for yes, any other key will exit",13,10,0
+yesNo           BYTE    "Press 'y' for yes, any other key will exit",13,10,0
 farewell_s      BYTE    13,10,"Come back soon ",0
 
 
@@ -189,12 +191,51 @@ nextNum:
     js leaveProc        ;inputed number is negative
 
     add ecx, eax        ;newly input number added to total
+
+    cmp ecx, eax        ;checking for overflow, sum will be less than latest number
+    jb overflow_call    ;overflow occured, warn user
+
     jmp nextNum
+
+overflow_call:
+    call overflow
+	jmp nextNum
 
 leaveProc:
     dec ebx             ;last number was the negative
     ret
 accumulate ENDP
+
+;#################################################
+;PROCEDURE:     overflow
+;
+;Purpose:   undue overflow and warn user
+;Recieves:  number that caused overflow in eax
+;           current total in ecx
+;Returns:   reverted total in ecx
+;
+;#################################################
+;//It is very unlikley that a user will enter this s procedure
+;//But it is a possiblity so i have checked for it and displayed a message to the user
+;//the last number entered is subtracted from the total, wich efectivly undoes the overflow
+;//because when addition overflows and sets the register to a small number (wrapping around)
+;//a subtraction will conversly overflow.
+;//
+;// This procedure and efective reversal of overflow tested by 
+;// moving 0fffffff0h to ecx before accumulator procedure
+overflow PROC USES edx
+    sub ecx, eax        ;undoes overflow
+
+    mov edx, OFFSET overflow_s
+    call Writestring            ;display overflow method
+    call WriteDec               ;will display offending number
+
+    mov edx, OFFSET instruction2_s  ;suggest entering negative number to end
+    call Writestring
+
+    ret
+overflow ENDP
+
 
 ;#################################################
 ;PROCEDURE:     get next number
@@ -252,7 +293,7 @@ calcRoundAverage PROC USES edx
     mov ebx, num_values     ;to be used in division and later divided by 2 and compared to remainder
     
     mov eax, final_total    ;prepare dividend
-    cdq                     ;fill edx with 0s
+    mov edx, 0              ;fill edx with 0s
 
     div ebx                 ;perform division
 
