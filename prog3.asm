@@ -109,11 +109,11 @@ Intro PROC USES edx eax ecx
     mov edx, OFFSET intro_s
     call WriteString
 
+getName:
     ;//print name input prompt//
     mov edx, OFFSET namePrompt_s
     call WriteString
 
-getName:
     ;//get user name//
     mov edx, OFFSET userName
     mov ecx, STRING_MAX
