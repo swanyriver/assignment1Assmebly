@@ -4,8 +4,8 @@ TITLE assingment 3     (prog3.asm)
 ; Course / Project ID   CS271-400 Fall14 Programming Assignment #3  Date: 11/02/14
 ; Description: This program will repeatdly ask the user to enter numbers below the defined 
 ;              UPPER_BOUND until a negative is entered at wich time the sum and average will be displayed.
+;              The accumulating sum is checked for overflow during input.
 ; extra credit: Lines are numbered during user input.
-;               Average is displayed as a floating point.
 
 INCLUDE Irvine32.inc
 
@@ -56,17 +56,17 @@ affirm          BYTE    'y'
 .code
 main PROC
 
-    call Intro
+    call Intro              ;get usrs name and introduce myself
 
 get_numbers:
 
-    call userInstructions
+    call userInstructions   ;explain input procedure and limit
 
-    call accumulate
+    call accumulate         ;get input from user
 
     ;////check for no input
     test ebx, ebx
-    jnz succesful_input
+    jnz succesful_input     ;numbers inputed preceding to calculations
 
     mov edx, OFFSET no_values_s
     call WriteString        ;no input message
@@ -192,8 +192,7 @@ nextNum:
 
     add ecx, eax        ;newly input number added to total
 
-    cmp ecx, eax        ;checking for overflow, sum will be less than latest number
-    jb overflow_call    ;overflow occured, warn user
+    jc overflow_call    ;overflow occured, warn user
 
     jmp nextNum
 
@@ -216,7 +215,7 @@ accumulate ENDP
 ;
 ;#################################################
 ;//It is very unlikley that a user will enter this s procedure
-;//But it is a possiblity so i have checked for it and displayed a message to the user
+;//But it is a possiblity so I have checked for it and displayed a message to the user
 ;//the last number entered is subtracted from the total, wich efectivly undoes the overflow
 ;//because when addition overflows and sets the register to a small number (wrapping around)
 ;//a subtraction will conversly overflow.
@@ -227,7 +226,7 @@ overflow PROC USES edx
     sub ecx, eax        ;undoes overflow
 
     mov edx, OFFSET overflow_s
-    call Writestring            ;display overflow method
+    call Writestring            ;display overflow message
     call WriteDec               ;will display offending number
 
     mov edx, OFFSET instruction2_s  ;suggest entering negative number to end
@@ -292,10 +291,10 @@ calcRoundAverage PROC USES edx
 
     mov ebx, num_values     ;to be used in division and later divided by 2 and compared to remainder
     
-    mov eax, final_total    ;prepare dividend
+    mov eax, final_total    ;prepare dividend edx:eax
     mov edx, 0              ;fill edx with 0s
 
-    div ebx                 ;perform division
+    div ebx                 ;perform division  final_total/num_values
 
     ;////////////////////////////////////////
     ;////rounding algorithm/////////////////
@@ -385,9 +384,11 @@ checkRepeat ENDP
 ;#################################################
 farewell PROC USES edx
     
+    ;//pring goodbye message
     mov edx,OFFSET farewell_s 
     call WriteString
 
+    ;//personalize goodbye message
     mov edx,OFFSET userName
     call Writestring
 
