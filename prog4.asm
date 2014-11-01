@@ -22,7 +22,7 @@ UPPER_BOUND = 200    ;input must be less than or equal this
 intro_s         BYTE    "Prime Number Finder",13,10
                 BYTE    "Programed by Brandon Swanson",13,10,0
 instruction_s   BYTE    13,10,"Please enter the number of primes you would like to see displayed"
-                BYTE    13,10,"less than or equal to ",0
+                BYTE    13,10,"greater than 0 and less than or equal to ",0
 mumPrompt_s     BYTE    13,10,"Number of primes desired: ",0
 farewell_s      BYTE    13,10,"Thank you for using my Prime Finder",0
 
@@ -43,9 +43,7 @@ main PROC
     call introduction   ;identify program
 
     call getUserData    ;how many primes?
-
-    call WriteDec
-    call crlf
+    mov num_primes, eax ;store input
 
 
 
@@ -121,13 +119,13 @@ getUserData  ENDP
 ;Returns:   carry flag set if input out-of-bounds
 ;
 ;#################################################
- PROC
+validate PROC
     
     cmp eax, UPPER_BOUND
     jg outofBounds      ;input>UPPER_BOUND
 
     cmp eax,1
-    jb out-of-bounds    ;input<1
+    jl outofBounds    ;input<1
 
     ;//clear cary flag and return normal
     clc
@@ -152,7 +150,6 @@ outofBounds:
     ;//set carry flag indicating out of bounds
     stc
     Ret
- ENDP
-
+validate ENDP
 
 END main
