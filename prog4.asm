@@ -14,7 +14,10 @@ TITLE assingment 4     (prog4.asm)
 
 INCLUDE Irvine32.inc
 
+;////////////////PROGRAM CONSTANTS//////////////////
 UPPER_BOUND = 200    ;input must be less than or equal this
+SPACING     = 5     ;minimum spaces between numbers
+PER_LINE    = 5     ;number of terms to display per line
 
 .data
 
@@ -24,7 +27,7 @@ intro_s         BYTE    "Prime Number Finder",13,10
 instruction_s   BYTE    13,10,"Please enter the number of primes you would like to see displayed"
                 BYTE    13,10,"greater than 0 and less than or equal to ",0
 mumPrompt_s     BYTE    13,10,"Number of primes desired: ",0
-farewell_s      BYTE    13,10,"Thank you for using my Prime Finder",0
+farewell_s      BYTE    13,10,"Thank you for using my Prime Finder",13,10,13,10,0
 
 
 ;/////////////ERROR STRINGS//////////////////////////
@@ -34,7 +37,7 @@ outOfRange_s    BYTE    "please keep your input greater than 0 and less than or 
 num_primes      DWORD    ?
 
 ;/////////////PROGRAM DATA/////////////////////////
-primes_a        DWORD   UPPER_BOUND dup (?)
+primes_a        DWORD   2,3, UPPER_BOUND-2 dup (?)
 
 
 .code
@@ -46,6 +49,7 @@ main PROC
     mov num_primes, eax ;store input
 
 
+    call farewell
 
 	exit	; exit to operating system
 main ENDP
@@ -151,5 +155,21 @@ outofBounds:
     stc
     Ret
 validate ENDP
+
+;#################################################
+;PROCEDURE:    farewell
+;
+;Purpose:   print a farewell message
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+farewell PROC USES edx
+    
+    mov edx,OFFSET farewell_s
+    call WriteString
+
+    ret
+farewell ENDP
 
 END main
