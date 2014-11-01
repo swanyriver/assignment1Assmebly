@@ -31,7 +31,7 @@ farewell_s      BYTE    13,10,"Thank you for using my Prime Finder",0
 outOfRange_s    BYTE    "please keep your input greater than 0 and less than or equal to ",0 ;constant appended
 
 ;/////////////USER INPUT VARIABLES//////////////////
-num_primes      BYTE    ?
+num_primes      DWORD    ?
 
 ;/////////////PROGRAM DATA/////////////////////////
 primes_a        DWORD   UPPER_BOUND dup (?)
