@@ -40,11 +40,119 @@ primes_a        DWORD   UPPER_BOUND dup (?)
 .code
 main PROC
 
-    call dumpregs
+    call introduction   ;identify program
+
+    call getUserData    ;how many primes?
+
+    call WriteDec
+    call crlf
+
+
 
 	exit	; exit to operating system
 main ENDP
 
-; (insert additional procedures here)
+;#################################################
+;PROCEDURE:     Intro
+;
+;Purpose:   print introduction 
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+introduction PROC
+    push edx
+
+    ;//print user welcome//
+    mov edx, OFFSET intro_s
+    call WriteString
+    call crlf
+    
+    pop edx
+    ret
+introduction ENDP
+
+;#################################################
+;PROCEDURE:     get user data
+;
+;Purpose:   call input procedure to get num primes 
+;           to be displayed
+;Recieves:  none
+;Returns:   value in eax
+;
+;#################################################
+getUserData  PROC
+
+    push edx
+
+    ;// display instructions
+    mov edx, OFFSET instruction_s
+    call WriteString
+
+    ;//display UPPER_BOUND
+    mov eax, UPPER_BOUND
+    call WriteDec
+    call crlf
+
+
+input: 
+    ;display input prompt with number
+    mov edx, OFFSET mumPrompt_s
+    call WriteString
+
+    call ReadInt
+
+    jo input            ;overflow indicated invalid input
+
+    call validate       ;validate input
+
+    jc input            ;out of bounds indicated by validate
+
+    pop edx
+
+    ret                 ;input is valid and less than UPPER_BOUND retruning
+getUserData  ENDP
+
+;#################################################
+;PROCEDURE:     validate    
+;
+;Purpose:   check that input is in range [1-UPPER BOUND]
+;Recieves:  value in eax
+;Returns:   carry flag set if input out-of-bounds
+;
+;#################################################
+ PROC
+    
+    cmp eax, UPPER_BOUND
+    jg outofBounds      ;input>UPPER_BOUND
+
+    cmp eax,1
+    jb out-of-bounds    ;input<1
+
+    ;//clear cary flag and return normal
+    clc
+    ret
+
+
+outofBounds:
+    push edx
+    push eax
+
+    ;//load error message and UPPER_BOUND value
+    mov edx, OFFSET outOfRange_s
+    mov eax, UPPER_BOUND
+    ;/display message and UPPER_BOUND
+    call WriteString
+    call WriteDec
+    call crlf
+    
+    pop eax
+    pop edx
+
+    ;//set carry flag indicating out of bounds
+    stc
+    Ret
+ ENDP
+
 
 END main
