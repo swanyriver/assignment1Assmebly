@@ -16,8 +16,8 @@ INCLUDE Irvine32.inc
 
 ;////////////////PROGRAM CONSTANTS//////////////////
 UPPER_BOUND = 200    ;input must be less than or equal this
-SPACING     = 5     ;minimum spaces between numbers
-PER_LINE    = 5     ;number of terms to display per line
+SPACING     = 3     ;minimum spaces between numbers
+PER_LINE    = 10     ;number of terms to display per line
 
 .data
 
@@ -39,6 +39,9 @@ num_primes      DWORD    ?
 ;/////////////PROGRAM DATA/////////////////////////
 primes_a        DWORD   2,3, UPPER_BOUND-2 dup (?)
 
+;///////////////////USED FOR ALIGNMENT////////////
+spaces_needed   BYTE    ? ;calculated each time as longest numbers digits + SPACING
+
 
 .code
 main PROC
@@ -47,6 +50,10 @@ main PROC
 
     call getUserData    ;how many primes?
     mov num_primes, eax ;store input
+
+    call findPrimes
+
+    ;mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
 
 
     call farewell
@@ -155,6 +162,160 @@ outofBounds:
     stc
     Ret
 validate ENDP
+
+;#################################################
+;PROCEDURE:     find prime numbers   
+;
+;Purpose:   
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+findPrimes PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    mov ecx,num_primes      ;TODO pass as stack
+    mov eax, 1
+    mov ebx, OFFSET primes_a    ;TODO pass as stack
+
+    loop_top:
+
+    mov [ebx], eax
+    inc eax
+
+    loop loop_top
+
+
+
+    pop ebp     ;restore callers stack frame
+    Ret
+findPrimes ENDP
+
+;#################################################
+;PROCEDURE:     display prime numbers
+;
+;Purpose:   display N Fibonacci numbers
+;Recieves:  N number in ecx
+;           beging address of DWORD array in edx containing n terms
+;Returns:   none
+;
+; ebx conts output per line
+;#################################################
+showPrimes PROC USES eax ebx ecx edx
+
+    call set_alignment
+
+    mov ebx, PER_LINE    ;count terms per line
+
+show_one_number:
+    mov eax, [edx]      ;retrive next element in arry    
+    call print_prime    ;output number with spacing
+
+    dec ebx
+    jz return_line      ;numbers per line reached
+    jmp no_return_line  ;else
+
+return_line:
+    call crlf
+    mov ebx, PER_LINE    ;reset numbers line count
+no_return_line:
+            
+    add edx, TYPE DWORD ;increment array position
+    LOOP show_one_number
+
+    call crlf
+    ret
+showPrimes ENDP
+
+;#################################################
+;PROCEDURE:     print fib
+;               used by displayFibs
+;
+;Purpose:   display single alligneed Fibonacci number
+;Recieves:  number in eax
+;Returns:   none
+;
+;#################################################
+print_prime PROC USES eax ebx
+
+    call WriteDec       ;display number passed to EAX
+
+    call count_digits   ;retrive number of digits in bl
+    
+    mov al,' '          ;mov space to register used by WriteChar
+print_space:
+    call WriteChar
+    inc bl
+    cmp bl,spaces_needed
+    jne print_space     ;print spaces until ready for next number
+
+
+    ret
+print_prime ENDP
+
+;#################################################
+;PROCEDURE:    set alignment
+;              used by display_fibs
+;Purpose:   adjust number of spaces in spaces_s
+;Recieves:  N number in ecx
+;           beging address of DWORD array in edx containing n terms
+;Returns:   none
+;
+;#################################################
+set_alignment PROC USES eax ebx ecx edx
+
+    ;//get last term in array
+    mov eax, TYPE DWORD
+    dec ecx
+    push edx
+    mul ecx
+    pop edx
+    add edx, eax 
+    mov eax,[edx]           ;eax now contains edx[n] last element
+
+    ;//find its length
+    call count_digits       ;length of longest number in ebx
+
+    ;//add 5 spaces
+    add bl,SPACING
+    
+    ;//save as spaces needed
+    mov spaces_needed,bl                
+
+    ret
+set_alignment ENDP
+
+
+;#################################################
+;PROCEDURE:     count digits
+;               used by print_fib
+;               used by set_alignment
+;
+;Purpose:   determine number of digits in a number
+;Recieves:  number in eax
+;Returns:   number of digits in bl
+;
+;#################################################
+count_digits PROC USES ecx eax edx
+
+    mov bl, 1
+    mov ecx,10  ;divisor
+reduce_number:              ;divides by 10 until number is single digit
+    cmp eax,9
+    jna all_digits_counted
+
+    mov edx,0
+    div ecx
+
+    inc bl ;one more digit
+
+    jmp reduce_number
+
+all_digits_counted:
+
+    ret
+count_digits ENDP   
 
 ;#################################################
 ;PROCEDURE:    farewell

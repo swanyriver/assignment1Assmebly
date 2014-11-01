@@ -11,6 +11,6 @@ X_local EQU DWORD PTR [ebp-4]
     push ebp
     mov ebp,esp ;set up stack frame
 
-    pop ebp
+    pop ebp     ;restore callers stack frame
     Ret
  ENDP
