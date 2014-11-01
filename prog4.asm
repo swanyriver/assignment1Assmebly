@@ -13,6 +13,7 @@ TITLE assingment 4     (prog4.asm)
 ;               display more primes on sepearate pages
 
 INCLUDE Irvine32.inc
+INCLUDE Macros.inc
 
 ;////////////////PROGRAM CONSTANTS//////////////////
 UPPER_BOUND = 200    ;input must be less than or equal this
@@ -53,7 +54,12 @@ main PROC
 
     call findPrimes
 
-    ;mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
+    mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
+
+    mov ecx, num_primes
+    mov edx, OFFSET primes_a
+    call showPrimes
+
 
 
     call farewell
@@ -183,6 +189,7 @@ findPrimes PROC
 
     mov [ebx], eax
     inc eax
+    add ebx, TYPE DWORD
 
     loop loop_top
 
