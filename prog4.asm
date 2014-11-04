@@ -13,7 +13,6 @@ TITLE assingment 4     (prog4.asm)
 ;               display more primes on sepearate pages
 
 INCLUDE Irvine32.inc
-INCLUDE Macros.inc
 
 ;////////////////PROGRAM CONSTANTS//////////////////
 UPPER_BOUND = 200    ;input must be less than or equal this
@@ -53,8 +52,6 @@ main PROC
     mov num_primes, eax ;store input
 
     call findPrimes
-
-    mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
 
     mov ecx, num_primes
     mov edx, OFFSET primes_a
@@ -237,7 +234,7 @@ showPrimes ENDP
 
 ;#################################################
 ;PROCEDURE:     print fib
-;               used by displayFibs
+;               used by showPrimes
 ;
 ;Purpose:   display single alligneed Fibonacci number
 ;Recieves:  number in eax
@@ -250,7 +247,7 @@ print_prime PROC USES eax ebx
 
     call count_digits   ;retrive number of digits in bl
     
-    mov al,' '          ;mov space to register used by WriteChar
+    mov al,'-'          ;mov space to register used by WriteChar
 print_space:
     call WriteChar
     inc bl
@@ -263,8 +260,8 @@ print_prime ENDP
 
 ;#################################################
 ;PROCEDURE:    set alignment
-;              used by display_fibs
-;Purpose:   adjust number of spaces in spaces_s
+;              used by showPrimes
+;Purpose:   adjust spaces_needed
 ;Recieves:  N number in ecx
 ;           beging address of DWORD array in edx containing n terms
 ;Returns:   none

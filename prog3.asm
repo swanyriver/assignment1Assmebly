@@ -302,15 +302,27 @@ calcRoundAverage PROC USES edx
         ; the previous operation peformed floor on the theoretical floating results
         ; if the remainder is greater than half of the divisor (num_values/2)
         ; then it ought be rounded up instead of down and eax will be incremented
+        ; in the case that the divisor is odd (detected by carry flag on bit shift)
+        ; then this half divisor to be compared is incremented by 1, an odd divisor 
+        ; will have an even number of remainders possible, this operations now compares 
+        ; the remainder to the first number in the second half of this set
 
     shr ebx, 1              ;divide divisor by 2
+
+    jc odd_divisor  ;if divisor is odd inc the half divisor
+    jmp compare     ;else skip to comparison
+
+    odd_divisor:
+    inc ebx
+
+    compare:
     cmp edx, ebx
 
-    jb leaveProc   ;dont round up, remainder less than half divisor
+    jb leaveComp   ;dont round up, remainder less than half divisor
 
     inc eax ; round up edx > ebx  meaning remainder is more than or equal half the divisor
 
-leaveProc:
+leaveComp:
     ret
 calcRoundAverage ENDP
 ;#################################################
