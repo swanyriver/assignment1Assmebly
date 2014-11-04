@@ -51,7 +51,10 @@ main PROC
     call getUserData    ;how many primes?
     mov num_primes, eax ;store input
 
+    push num_primes      ;//passing argument N
+    push OFFSET primes_a ;//passing adress of array
     call findPrimes
+    sub esp, 8           ;//pop argument
 
     mov ecx, num_primes
     mov edx, OFFSET primes_a
@@ -169,18 +172,23 @@ validate ENDP
 ;#################################################
 ;PROCEDURE:     find prime numbers   
 ;
-;Purpose:   
-;Recieves:  none
-;Returns:   none
-;
+;Purpose:   search for user requested number of primes
+;Recieves:  number of primes to find, adress of array
+;Returns:   modifies array pointed to in second paramater
 ;#################################################
 findPrimes PROC
     push ebp
     mov ebp,esp ;set up stack frame
 
-    mov ecx,num_primes      ;TODO pass as stack
+    ;///save callers registers
+    push ebx
+    push ecx
+    push eax
+
+    ;//////recieve passed paramaters and set up registers
+    mov ecx, [ebp + 12]
+    mov ebx, [ebp + 8]
     mov eax, 1
-    mov ebx, OFFSET primes_a    ;TODO pass as stack
 
     loop_top:
 
@@ -191,6 +199,10 @@ findPrimes PROC
     loop loop_top
 
 
+    ;//restore callers registers
+    pop eax
+    pop ecx
+    pop ebx
 
     pop ebp     ;restore callers stack frame
     Ret
