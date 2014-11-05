@@ -53,13 +53,9 @@ main PROC
 
     push num_primes      ;//passing argument N
     push OFFSET primes_a ;//passing adress of array
-    call findPrimes
-    sub esp, 8           ;//pop argument
-
-    mov ecx, num_primes
-    mov edx, OFFSET primes_a
+    call findPrimes      ;//equivalant arguments for both functions
     call showPrimes
-
+    add esp, 8           ;//pop arguments
 
 
     call farewell
@@ -76,14 +72,14 @@ main ENDP
 ;
 ;#################################################
 introduction PROC
-    push edx
+    push edx        ;///save callers register
 
     ;//print user welcome//
     mov edx, OFFSET intro_s
     call WriteString
     call crlf
     
-    pop edx
+    pop edx         ;//restore callers register
     ret
 introduction ENDP
 
@@ -218,7 +214,19 @@ findPrimes ENDP
 ;
 ; ebx conts output per line
 ;#################################################
-showPrimes PROC USES eax ebx ecx edx
+showPrimes PROC
+
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    ;///save callers registers
+    push eax 
+    push ebx 
+    push ecx 
+    push edx
+
+    mov ecx, [ebp + 12]
+    mov ebx, [ebp + 8]
 
     call set_alignment
 
@@ -241,6 +249,15 @@ no_return_line:
     LOOP show_one_number
 
     call crlf
+
+    ;//restore callers registers
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+
+
+    pop ebp     ;restore callers stack frame
     ret
 showPrimes ENDP
 
@@ -293,7 +310,7 @@ set_alignment PROC USES eax ebx ecx edx
     ;//find its length
     call count_digits       ;length of longest number in ebx
 
-    ;//add 5 spaces
+    ;//add 3 spaces
     add bl,SPACING
     
     ;//save as spaces needed
