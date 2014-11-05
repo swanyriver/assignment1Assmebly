@@ -177,25 +177,27 @@ validate ENDP
 ;Recieves:  number of primes to find, adress of array
 ;Returns:   modifies array pointed to in second paramater
 ;#################################################
+primes_array_p  EQU DWORD PTR [ebp+8]
+num_primes_p    EQU DWORD PTR [ebp+12]
 findPrimes PROC
     push ebp
     mov ebp,esp ;set up stack frame
 
     ;///save callers registers
-    push ebx
+    push edi
     push ecx
     push eax
 
     ;//////recieve passed paramaters and set up registers
-    mov ecx, [ebp + 12]
-    mov ebx, [ebp + 8]
+    mov ecx, num_primes_p
+    mov edi, primes_array_p
     mov eax, 1
 
     loop_top:
 
-    mov [ebx], eax
+    mov [edi], eax
     inc eax
-    add ebx, TYPE DWORD
+    add edi, TYPE DWORD
 
     loop loop_top
 
@@ -203,11 +205,30 @@ findPrimes PROC
     ;//restore callers registers
     pop eax
     pop ecx
-    pop ebx
+    pop edi
 
     pop ebp     ;restore callers stack frame
     Ret 8
 findPrimes ENDP
+
+;#################################################
+;PROCEDURE:      is prime
+;
+;Purpose:   
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+primes_array_p  EQU DWORD PTR [ebp+8]
+num_primes_p    EQU DWORD PTR [ebp+12]
+
+isPrime PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    pop ebp     ;restore callers stack frame
+    Ret
+isPrime ENDP
 
 ;#################################################
 ;PROCEDURE:     display prime numbers
