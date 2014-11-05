@@ -179,9 +179,14 @@ validate ENDP
 ;#################################################
 primes_array_p  EQU DWORD PTR [ebp+8]
 num_primes_p    EQU DWORD PTR [ebp+12]
+next_canditate  EQU DWORD PTR [ebp-12]
 findPrimes PROC
     push ebp
     mov ebp,esp ;set up stack frame
+
+    ;//first two primes defined check for less than 2 requested
+    cmp num_primes_p, 2
+    jng exit_without_calculations
 
     ;///save callers registers
     push edi
@@ -191,22 +196,43 @@ findPrimes PROC
     ;//////recieve passed paramaters and set up registers
     mov ecx, num_primes_p
     mov edi, primes_array_p
-    mov eax, 1
 
-    loop_top:
+    ;///////set up eax, next_candidate
+    mov eax, 3
+    ;///////move array pointer to second index
+    add edi, 4
+    ;///////account for two primes already defined
+    sub ecx, 2
 
-    mov [edi], eax
-    inc eax
+    ;//outer loop, runs num_primes_p times
+    n_primes:
+    
+        ;//innner loop, while next_candidate is not prime
+        inc_candidate:
+        add eax, 2   ;increment odd numbers only
+
+        ;//pass paramaters
+        push eax            ;next possible prime
+        push edi            ;current location in array
+        push primes_array_p ;begining of array
+        call isPrime
+
+        jnc inc_candidate   ;not prime
+
+    ;///store found prime in array
     add edi, TYPE DWORD
+    mov [edi], eax
+    
 
-    loop loop_top
-
+    loop n_primes
+    
 
     ;//restore callers registers
     pop eax
     pop ecx
     pop edi
 
+exit_without_calculations:
     pop ebp     ;restore callers stack frame
     Ret 8
 findPrimes ENDP
@@ -214,20 +240,63 @@ findPrimes ENDP
 ;#################################################
 ;PROCEDURE:      is prime
 ;
-;Purpose:   
-;Recieves:  none
-;Returns:   none
+;Purpose:   determine if number (first paramater) is prime
+;Recieves:  number to investigate
+;           adress of last prime discovered in array
+;           begingin address of discovered primes array
+;Returns:   carry flag set if prime_candidate is prime
 ;
 ;#################################################
 primes_array_p  EQU DWORD PTR [ebp+8]
-num_primes_p    EQU DWORD PTR [ebp+12]
+last_prime_p    EQU DWORD PTR [ebp+12]
+prime_candidate EQU DWORD PTR [ebp+16]
 
 isPrime PROC
     push ebp
     mov ebp,esp ;set up stack frame
 
+    ;///save callers registers
+    push edi
+    push edx
+    push eax
+
+    mov edi, primes_array_p ;array pointer
+
+    check_for_factor:
+
+    mov eax, prime_candidate
+    mov edx, 0
+    div DWORD PTR [edi]
+
+    ;//if(remainder == 0) return false
+    cmp edx, 0
+    je return_false
+
+    ;//if(edi == last_prime_p)   ;// like itterator.end()
+    ;//return true, divided by all lower primes no factor found
+    cmp edi, last_prime_p
+    je return_true
+
+    ;//else, current divisor not a factor, more prime factors remaining
+    add edi, TYPE DWORD
+    jmp check_for_factor
+
+
+return_true:    
+    stc
+    jmp return
+
+return_false:
+    clc
+
+return:
+    ;//restore callers registers
+    pop eax
+    pop edx
+    pop edi
+
     pop ebp     ;restore callers stack frame
-    Ret
+    Ret  12
 isPrime ENDP
 
 ;#################################################
