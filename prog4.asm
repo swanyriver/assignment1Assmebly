@@ -54,10 +54,13 @@ main PROC
 
     push num_primes      ;//passing argument N
     push OFFSET primes_a ;//passing adress of array
-    call findPrimes      ;//equivalant arguments for both functions
+    call findPrimes      
+
     mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
+
+    push num_primes      ;//passing argument N
+    push OFFSET primes_a ;//passing adress of array
     call showPrimes
-    add esp, 8           ;//pop arguments
 
 
     call farewell
@@ -203,19 +206,21 @@ findPrimes PROC
     pop ebx
 
     pop ebp     ;restore callers stack frame
-    Ret
+    Ret 8
 findPrimes ENDP
 
 ;#################################################
 ;PROCEDURE:     display prime numbers
 ;
 ;Purpose:   display N Fibonacci numbers
-;Recieves:  N number in ecx
-;           beging address of DWORD array in edx containing n terms
+;Recieves:  number of primes in array
+;           beging address of DWORD array
 ;Returns:   none
 ;
 ; ebx conts output per line
 ;#################################################
+primes_array_p  EQU DWORD PTR [ebp+8]
+num_primes_p    EQU DWORD PTR [ebp+12]
 showPrimes PROC
 
     push ebp
@@ -225,17 +230,21 @@ showPrimes PROC
     push eax 
     push ebx 
     push ecx 
-    push edx
+    push edi
 
-    mov ecx, [ebp + 12]
-    mov edx, [ebp + 8]
-
+    ;//pass paramaters
+    push num_primes_p
+    push primes_array_p
     call set_alignment
+
+    ;//prime registers for use
+    mov ecx, num_primes_p
+    mov edi, primes_array_p
 
     mov ebx, PER_LINE    ;count terms per line
 
 show_one_number:
-    mov eax, [edx]      ;retrive next element in arry    
+    mov eax, [edi]      ;retrive next element in arry    
     call print_prime    ;output number with spacing
 
     dec ebx
@@ -247,20 +256,20 @@ return_line:
     mov ebx, PER_LINE    ;reset numbers line count
 no_return_line:
             
-    add edx, TYPE DWORD ;increment array position
+    add edi, TYPE DWORD ;increment array position
     LOOP show_one_number
 
     call crlf
 
     ;//restore callers registers
-    pop edx
+    pop edi
     pop ecx
     pop ebx
     pop eax
 
 
     pop ebp     ;restore callers stack frame
-    ret
+    ret 8
 showPrimes ENDP
 
 ;#################################################
@@ -293,32 +302,50 @@ print_prime ENDP
 ;PROCEDURE:    set alignment
 ;              used by showPrimes
 ;Purpose:   adjust spaces_needed
-;Recieves:  N number in ecx
-;           beging address of DWORD array in edx containing n terms
+;Recieves:  N number
+;           beging address of DWORD array containing n terms
 ;Returns:   none
 ;
 ;#################################################
-set_alignment PROC USES eax ebx ecx edx
+primes_array_p  EQU DWORD PTR [ebp+8]
+num_primes_p    EQU DWORD PTR [ebp+12]
+set_alignment PROC
+
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    ;///save callers registers
+    push eax 
+    push ebx
+    push edx 
+    push edi
 
     ;//get last term in array
     mov eax, TYPE DWORD
-    dec ecx
-    push edx
-    mul ecx
-    pop edx
-    add edx, eax 
-    mov eax,[edx]           ;eax now contains edx[n] last element
+    mov edi, primes_array_p
+    dec num_primes_p
+    mul num_primes_p
+    add edi, eax 
+    mov eax,[edi]           ;eax now contains primes_array[n] last element
 
     ;//find its length
-    call count_digits       ;length of longest number in ebx
+    call count_digits       ;length of longest number in primes array
 
     ;//add 3 spaces
     add bl,SPACING
     
-    ;//save as spaces needed
+    ;//save as spaces needed    ;TODO make a return value
     mov spaces_needed,bl                
 
-    ret
+    ;//restore callers registers
+    pop edi
+    pop edx
+    pop ebx
+    pop eax
+
+
+    pop ebp     ;restore callers stack frame
+    ret 8
 set_alignment ENDP
 
 
