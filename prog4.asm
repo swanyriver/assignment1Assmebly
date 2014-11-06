@@ -10,7 +10,6 @@ TITLE assingment 4     (prog4.asm)
 
 ; extra credit: Using prime divisors stored in an array
 ;               allighned output collumns
-;               display more primes on sepearate pages
 
 INCLUDE Irvine32.inc
 
@@ -375,13 +374,15 @@ print_prime PROC USES eax ebx ecx
     mov al,' '          ;mov space to register used by WriteChar
 
     ;//pre-test loop, print bl - spaces needed
-    jmp test_spaces
-print_space:
+print_spaces:
+    cmp bl,spaces_needed
+    je exit_loop     
+
+    ;print spaces until next number will be right aligned
     call WriteChar
     inc bl
-test_spaces:
-    cmp bl,spaces_needed
-    jne print_space     ;print spaces until ready for next number
+    jmp print_spaces
+exit_loop:
 
     pop eax
     call WriteDec       ;display number passed to EAX
