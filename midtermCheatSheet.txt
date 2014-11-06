@@ -1,0 +1,54 @@
+Registers
+• Control: dictates current state of the machine
+• Status: indicates status of operation (error, overflow, etc.)
+• MAR: Memory Address Register (holds address of memory 
+location currently referenced)
+• MDR: Memory Data Register: holds data being sent to or 
+retrieved from the memory address in the MAR
+• IP: Instruction Pointer (holds memory address of next 
+instruction)
+• IR: Instruction Register (holds current machine instruction)
+• Operand_1, Operand_2, Result: ALU registers (for calculations 
+and comparisons)
+• General: fast temporary storage
+
+Instruction Execution Cycle
+1. Fetch next instruction (at address in IP) into IR.
+2. Increment IP to point to next instruction.
+3. Decode instruction in IR
+4. If instruction requires memory access, 
+A. Determine memory address.
+B. Fetch operand from memory into a CPU register, or send 
+operand from a CPU register to memory.
+5. Execute micro-program for instruction
+6. Go to step 1 (unless the “halt” instruction has been 
+executed)
+
+Ki = 210, Mi = 220, Gi = 230
+
+
+• ReadString - Reads a string from keyboard, terminated 
+by the Enter key.
+– Preconditions: OFFSET of memory destination in EDX
+ Size of memory destination in ECX
+– Postconditions: String entered is in memory
+ Length of string entered is in EAX
+
+SIGNED todo add unsigned to this
+cmp dest, source
+• JE jump if destination = source
+• JL jump if destination < source
+• JG jump if destination > source
+• JLE jump if destination <= source
+• JGE jump if destination >= source
+• JNE jump if destination not = source
+
+Instruction Form    Condition for Clearing CF and OF
+   r/m8                AL := sign-extend of AL to 16 bits
+   r/m16               AX := sign-extend of AX to 32 bits
+   r/m32               EDX:EAX := sign-extend of EAX to 32 bits
+   r16,r/m16           Result exactly fits within r16
+   r/32,r/m32          Result exactly fits within r32
+   r16,r/m16,imm16     Result exactly fits within r16
+   r32,r/m32,imm32     Result exactly fits within r32
+
