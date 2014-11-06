@@ -179,7 +179,6 @@ validate ENDP
 ;#################################################
 primes_array_p  EQU DWORD PTR [ebp+8]
 num_primes_p    EQU DWORD PTR [ebp+12]
-next_canditate  EQU DWORD PTR [ebp-12]
 findPrimes PROC
     push ebp
     mov ebp,esp ;set up stack frame
@@ -363,7 +362,7 @@ no_return_line:
 showPrimes ENDP
 
 ;#################################################
-;PROCEDURE:     print fib
+;PROCEDURE:     print prime
 ;               used by showPrimes
 ;
 ;Purpose:   display single alligneed Fibonacci number
@@ -371,18 +370,32 @@ showPrimes ENDP
 ;Returns:   none
 ;
 ;#################################################
-print_prime PROC USES eax ebx
+print_prime PROC USES eax ebx ecx
 
-    call WriteDec       ;display number passed to EAX
 
     call count_digits   ;retrive number of digits in bl
     
+    push eax
     mov al,'-'          ;mov space to register used by WriteChar
+
+    ;//pre-test loop, print bl - spaces needed
+    jmp test_spaces
 print_space:
     call WriteChar
     inc bl
+test_spaces:
     cmp bl,spaces_needed
     jne print_space     ;print spaces until ready for next number
+
+    pop eax
+    call WriteDec       ;display number passed to EAX
+
+    ;//put n number of spaces between displayed number
+    mov al, '*'
+    mov ecx, SPACING
+    tabbing:
+    call WriteChar
+    LOOP tabbing
 
 
     ret
@@ -420,12 +433,9 @@ set_alignment PROC
 
     ;//find its length
     call count_digits       ;length of longest number in primes array
-
-    ;//add 3 spaces
-    add bl,SPACING
     
     ;//save as spaces needed    ;TODO make a return value
-    mov spaces_needed,bl                
+    mov spaces_needed,bl             
 
     ;//restore callers registers
     pop edi
