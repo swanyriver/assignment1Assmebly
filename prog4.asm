@@ -13,7 +13,6 @@ TITLE assingment 4     (prog4.asm)
 ;               display more primes on sepearate pages
 
 INCLUDE Irvine32.inc
-INCLUDE Macros.inc
 
 ;////////////////PROGRAM CONSTANTS//////////////////
 UPPER_BOUND = 200    ;input must be less than or equal this
@@ -56,12 +55,9 @@ main PROC
     push OFFSET primes_a ;//passing adress of array
     call findPrimes      
 
-    mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
-
     push num_primes      ;//passing argument N
     push OFFSET primes_a ;//passing adress of array
     call showPrimes
-
 
     call farewell
 
@@ -376,7 +372,7 @@ print_prime PROC USES eax ebx ecx
     call count_digits   ;retrive number of digits in bl
     
     push eax
-    mov al,'-'          ;mov space to register used by WriteChar
+    mov al,' '          ;mov space to register used by WriteChar
 
     ;//pre-test loop, print bl - spaces needed
     jmp test_spaces
@@ -391,7 +387,7 @@ test_spaces:
     call WriteDec       ;display number passed to EAX
 
     ;//put n number of spaces between displayed number
-    mov al, '*'
+    mov al, ' '
     mov ecx, SPACING
     tabbing:
     call WriteChar
