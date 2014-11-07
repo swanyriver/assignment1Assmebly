@@ -169,17 +169,15 @@ validate ENDP
 ;PROCEDURE:     find prime numbers   
 ;
 ;Purpose:   search for user requested number of primes
-;Recieves:  number of primes to find, adress of array
+;Recieves:  number of primes to find [ebp+12], adress of array [ebp+8]
 ;Returns:   modifies array pointed to in second paramater
 ;#################################################
-primes_array_p  EQU DWORD PTR [ebp+8]
-num_primes_p    EQU DWORD PTR [ebp+12]
 findPrimes PROC
     push ebp
     mov ebp,esp ;set up stack frame
 
     ;//first two primes defined check for less than 2 requested
-    cmp num_primes_p, 2
+    cmp DWORD PTR [ebp+12],2   ;num primes to find
     jng exit_without_calculations
 
     ;///save callers registers
@@ -188,8 +186,8 @@ findPrimes PROC
     push eax
 
     ;//////recieve passed paramaters and set up registers
-    mov ecx, num_primes_p
-    mov edi, primes_array_p
+    mov ecx, [ebp+12]  ;num primes to find
+    mov edi, [ebp+8]  ;primes array address
 
     ;///////set up eax, next_candidate
     mov eax, 3
@@ -198,7 +196,7 @@ findPrimes PROC
     ;///////account for two primes already defined
     sub ecx, 2
 
-    ;//outer loop, runs num_primes_p times
+    ;//outer loop, runs num primes searching for times
     n_primes:
     
         ;//innner loop, while next_candidate is not prime
@@ -208,7 +206,7 @@ findPrimes PROC
         ;//pass paramaters
         push eax            ;next possible prime
         push edi            ;current location in array
-        push primes_array_p ;begining of array
+        push [ebp+8]  ;primes array address ;begining of array
         call isPrime
 
         jnc inc_candidate   ;not prime
@@ -235,16 +233,12 @@ findPrimes ENDP
 ;PROCEDURE:      is prime
 ;
 ;Purpose:   determine if number (first paramater) is prime
-;Recieves:  number to investigate
-;           adress of last prime discovered in array
-;           begingin address of discovered primes array
+;Recieves:  number to investigate [ebp+16]
+;           adress of last prime discovered in array [ebp+12]
+;           begining address of discovered primes array [ebp+8]
 ;Returns:   carry flag set if prime_candidate is prime
 ;
 ;#################################################
-primes_array_p  EQU DWORD PTR [ebp+8]
-last_prime_p    EQU DWORD PTR [ebp+12]
-prime_candidate EQU DWORD PTR [ebp+16]
-
 isPrime PROC
     push ebp
     mov ebp,esp ;set up stack frame
@@ -254,11 +248,11 @@ isPrime PROC
     push edx
     push eax
 
-    mov edi, primes_array_p ;array pointer
+    mov edi, [ebp+8]  ;primes array address
 
     check_for_factor:
 
-    mov eax, prime_candidate
+    mov eax, [ebp+16]  ;num being evaluated for primeness
     mov edx, 0
     div DWORD PTR [edi]
 
@@ -266,9 +260,10 @@ isPrime PROC
     cmp edx, 0
     je return_false
 
-    ;//if(edi == last_prime_p)   ;// like itterator.end()
+    ;//if(edi == [ebp+12]) ;adress of last discovered prime
+    ;// like itterator.end()
     ;//return true, divided by all lower primes no factor found
-    cmp edi, last_prime_p
+    cmp edi, [ebp+12]
     je return_true
 
     ;//else, current divisor not a factor, more prime factors remaining
@@ -297,14 +292,12 @@ isPrime ENDP
 ;PROCEDURE:     display prime numbers
 ;
 ;Purpose:   display N Fibonacci numbers
-;Recieves:  number of primes in array
-;           beging address of DWORD array
+;Recieves:  number of primes in array     [ebp+12]
+;           beging address of DWORD array [ebp+8]
 ;Returns:   none
 ;
 ; ebx conts output per line
 ;#################################################
-primes_array_p  EQU DWORD PTR [ebp+8]
-num_primes_p    EQU DWORD PTR [ebp+12]
 showPrimes PROC
 
     push ebp
@@ -317,13 +310,13 @@ showPrimes PROC
     push edi
 
     ;//pass paramaters
-    push num_primes_p
-    push primes_array_p
+    push [ebp+12]  ;num primes in array
+    push [ebp+8]  ;primes array address
     call set_alignment
 
-    ;//prime registers for use
-    mov ecx, num_primes_p
-    mov edi, primes_array_p
+    ;//prepare registers for use
+    mov ecx, [ebp+12]  ;num primes in array
+    mov edi, [ebp+8]  ;primes array address
 
     mov ebx, PER_LINE    ;count terms per line
 
@@ -402,13 +395,11 @@ print_prime ENDP
 ;PROCEDURE:    set alignment
 ;              used by showPrimes
 ;Purpose:   adjust spaces_needed
-;Recieves:  N number
-;           beging address of DWORD array containing n terms
-;Returns:   none
+;Recieves:  number of primes in array     [ebp+12]
+;           beging address of DWORD array [ebp+8]
+;Returns:   modifies global value spaces_needed
 ;
 ;#################################################
-primes_array_p  EQU DWORD PTR [ebp+8]
-num_primes_p    EQU DWORD PTR [ebp+12]
 set_alignment PROC
 
     push ebp
@@ -422,9 +413,9 @@ set_alignment PROC
 
     ;//get last term in array
     mov eax, TYPE DWORD
-    mov edi, primes_array_p
-    dec num_primes_p
-    mul num_primes_p
+    mov edi, [ebp+8]  ;primes array address
+    dec DWORD PTR [ebp+12]  ;num primes in array
+    mul DWORD PTR [ebp+12]  ;num primes in array
     add edi, eax 
     mov eax,[edi]           ;eax now contains primes_array[n] last element
 
