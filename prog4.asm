@@ -10,6 +10,14 @@ TITLE assingment 4     (prog4.asm)
 
 ; extra credit: Using prime divisors stored in an array
 ;               alligned output collumns
+;
+;
+; stack variables: for this assignment I have endeavored to use local variables and
+;                  paramater passing via the stack.  The code seems a lot less readable without
+;                  identifiers but I am using the form used in the demo5.asm file from blackboard
+;                  leaf procedures: validate, count_digits and print_prime still recieve a paramater in eax
+;                  all returns values are in eax (matching gcc compiler)
+;                  and boolean returns utilize carry flag to indicate true/false
 
 INCLUDE Irvine32.inc
 
@@ -294,7 +302,7 @@ isPrime ENDP
 ;#################################################
 ;PROCEDURE:     display prime numbers
 ;
-;Purpose:   display N Fibonacci numbers
+;Purpose:   display N prime numbers
 ;Recieves:  number of primes in array     [ebp+12]
 ;           beging address of DWORD array [ebp+8]
 ;Returns:   none
@@ -356,7 +364,7 @@ showPrimes ENDP
 ;PROCEDURE:     print prime
 ;               used by showPrimes
 ;
-;Purpose:   display single alligneed Fibonacci number
+;Purpose:   display single alligneed prime number
 ;Recieves:  number in eax
 ;Returns:   none
 ;
@@ -442,7 +450,7 @@ set_alignment ENDP
 
 ;#################################################
 ;PROCEDURE:     count digits
-;               used by print_fib
+;               used by print_prime
 ;               used by set_alignment
 ;
 ;Purpose:   determine number of digits in a number
