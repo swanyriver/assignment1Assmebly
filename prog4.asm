@@ -9,7 +9,7 @@ TITLE assingment 4     (prog4.asm)
 ;              by previously discovered primes, a remainder of 0 indicates a composite number.
 
 ; extra credit: Using prime divisors stored in an array
-;               allighned output collumns
+;               alligned output collumns
 
 INCLUDE Irvine32.inc
 
@@ -32,34 +32,37 @@ farewell_s      BYTE    13,10,"Thank you for using my Prime Finder",13,10,13,10,
 ;/////////////ERROR STRINGS//////////////////////////
 outOfRange_s    BYTE    "please keep your input greater than 0 and less than or equal to ",0 ;constant appended
 
-;/////////////USER INPUT VARIABLES//////////////////
-num_primes      DWORD    ?
-
 ;/////////////PROGRAM DATA/////////////////////////
 primes_a        DWORD   2,3, UPPER_BOUND-2 dup (?)
 
 ;///////////////////USED FOR ALIGNMENT////////////
-spaces_needed   BYTE    ? ;calculated each time as longest numbers digits + SPACING
+spaces_needed   BYTE    ? ;necessary spaces for proper allignment
 
 
 .code
 main PROC
 
+    push ebp
+    mov ebp,esp ;set up stack frame
+    sub esp, 4  ;reserve space for local variable num_primes to find
+
     call introduction   ;identify program
 
     call getUserData    ;how many primes?
-    mov num_primes, eax ;store input
+    mov [esp-4], eax ;store input
 
-    push num_primes      ;//passing argument N
+    push [esp-4]      ;//passing argument num primes to find
     push OFFSET primes_a ;//passing adress of array
     call findPrimes      
 
-    push num_primes      ;//passing argument N
+    push [esp-4]      ;//passing argument num primes found
     push OFFSET primes_a ;//passing adress of array
     call showPrimes
 
     call farewell
 
+    mov esp, ebp ;free local variables
+    pop ebp      ;restore callers stack frame
 	exit	; exit to operating system
 main ENDP
 
