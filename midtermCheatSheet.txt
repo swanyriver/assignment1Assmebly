@@ -34,14 +34,22 @@ by the Enter key.
 – Postconditions: String entered is in memory
  Length of string entered is in EAX
 
-SIGNED todo add unsigned to this
 cmp dest, source
+UNSIGNED
+JA, JNBE   dest > source
+JAE, JNE   >=
+JB, JNAE   <
+JBE, JNA   <=
+
+SIGNED 
 • JE jump if destination = source
-• JL jump if destination < source
-• JG jump if destination > source
+• JL jump if destination < source   JNGE
+• JG jump if destination > source   JNLE
 • JLE jump if destination <= source
-• JGE jump if destination >= source
+• JGE jump if destination >= source JNL
 • JNE jump if destination not = source
+
+
 
 IMUL
 Instruction Form    Condition for Clearing CF and OF
@@ -80,11 +88,10 @@ binary decimal points
 stack
 • copies the address of the called procedure into EIP
 
-• A push operation
-• decrements the stack pointer by 4 (or 2)
-• copies a value into the location pointed to by the 
-stack pointer
 
-pop coppies and then increments
-
+push decrements esp then copies
+pop copies and then increments esp
 esp always points to a value not an empty spot
+
+
+SUB sets cary if a-b a<b
