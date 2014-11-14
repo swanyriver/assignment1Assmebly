@@ -27,7 +27,7 @@ about_s_line2   BYTE    13,10, "displays the original list, sorts the list, and 
                 BYTE    13,10, "median value. Finally, it displays the list sorted in descending order."
                 BYTE    13,10,13,10,0         
 range_to_s      BYTE    " to ",0
-mumPrompt_s     BYTE    "How many numbers should be generated?",0
+mumPrompt_s     BYTE    "How many numbers should be generated? ",0
 
 
 ;/////////////ERROR STRINGS//////////////////////////
@@ -41,12 +41,54 @@ request         DWORD   ?
 
 .code
 main PROC
-
-; (insert executable instructions here)
-
+	
+	call Introduction
+    
 	exit	; exit to operating system
 main ENDP
 
-; (insert additional procedures here)
+;#################################################
+;PROCEDURE:      Introduction
+;
+;Purpose:   Display an introduction the the program
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+ Introduction PROC
+    ;///save callers registers
+    push edx
+    push eax
+
+    ;////////////display programmer name
+    mov edx, OFFSET intro_s
+    call WriteString
+
+    ;///display information about program
+    mov edx, OFFSET about_s
+    call WriteString
+
+    ;///display range of random numbers
+    mov eax, LO
+    call WriteDec
+
+    mov edx, OFFSET range_to_s
+    call WriteString
+
+    mov eax, HI
+    call WriteDec
+
+    mov edx, OFFSET about_s_line2
+    call WriteString
+
+    ;//restore callers registers
+    pop eax
+    pop edx
+
+	ret
+
+Introduction ENDP
+
+
 
 END main
