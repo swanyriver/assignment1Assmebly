@@ -31,6 +31,9 @@ about_s_line2   BYTE    13,10, "displays the original list, sorts the list, and 
                 BYTE    13,10,13,10,0         
 range_to_s      BYTE    " to ",0
 mumPrompt_s     BYTE    "How many numbers should be generated? ",0
+unsorted_s      BYTE    "Unsorted Random Numbers:",13,10,0
+sorted_s        BYTE    "Sorted Numbers:",13,10,0
+median_s        BYTE    "The median is: ", 0
 
 
 ;/////////////ERROR STRINGS//////////////////////////
@@ -59,6 +62,11 @@ main PROC
     call FillArray
 
     mDumpMem OFFSET array, LENGTHOF array, TYPE array 
+
+	push OFFSET unsorted_s
+	push request
+    push OFFSET array
+    call DisplayList
    
     
 	exit	; exit to operating system
@@ -197,6 +205,7 @@ FillArray PROC
     ;//save callers registers
     push eax
     push ecx
+    push edi
 
 
     ;//retrive paramaters
@@ -218,6 +227,7 @@ next_random:
 
 
     ;//restore callers registers
+    pop edi
     pop ecx
     pop eax
 
@@ -225,6 +235,76 @@ next_random:
     Ret 8
 FillArray ENDP
 
+
+;#################################################
+;PROCEDURE:  Display List    
+;
+;Purpose:   Output the contents of Array
+;Recieves:  Adress of Array
+;           number of values to genearate
+;           Adress of string to display
+;Returns:   none
+;
+;#################################################
+DisplayList PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    ;//save callers registers
+    push eax
+    push ecx
+    push esi
+    push edx
+    push ebx
+
+    ;//retrive paramaters
+    mov edx, [ebp+16]   ;adress of string
+    mov ecx, [ebp+12]   ;num to generate
+    mov esi, [ebp+8]    ;array adress
+
+    ;//display title
+    call WriteString
+
+    mov ebx, PER_LINE
+
+display_next_number:
+
+    ;//display number
+    movzx eax, WORD PTR [esi]
+    call WriteDec
+
+    ;//add spaces
+    push ecx
+    mov ecx, SPACING
+    mov al, '-'
+    space: call WriteChar
+    loop space
+    pop ecx
+
+    dec ebx
+    jz return_line      ;numbers per line reached
+    jmp no_return_line  ;else
+
+return_line:
+    call crlf
+    mov ebx, PER_LINE    ;reset numbers line count
+no_return_line:
+
+    add esi, 2
+
+    loop display_next_number
+
+
+    ;//restore callers registers
+    pop ebx
+    pop edx
+    pop esi
+    pop ecx
+    pop eax
+
+    pop ebp     ;restore callers stack frame
+    Ret 12
+DisplayList ENDP
 
 
 END main
