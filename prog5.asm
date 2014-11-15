@@ -53,12 +53,12 @@ main PROC
     call getUserData
 
     mDumpMem OFFSET request, 1, TYPE request 
-    ;mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
 
     push request
     push OFFSET array
     call FillArray
 
+    mDumpMem OFFSET array, LENGTHOF array, TYPE array 
    
     
 	exit	; exit to operating system
@@ -200,7 +200,8 @@ FillArray PROC
 
 
     ;//retrive paramaters
-    mov ecx, [ebp+12]
+    mov ecx, [ebp+12]   ;num to generate
+    mov edi, [ebp+8]    ;array adress
 
 next_random:
 
@@ -209,8 +210,9 @@ next_random:
     call RandomRange
     add eax, LO
     
-    call WriteDec
-    call crlf
+    ;//store result
+    mov WORD PTR [edi], ax
+    add edi, 2
 
     loop next_random
 
