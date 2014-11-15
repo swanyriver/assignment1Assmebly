@@ -12,10 +12,11 @@ INCLUDE Macros.inc
 
 
 ;////////////////PROGRAM CONSTANTS//////////////////
-MIN = 10    ;//range of user input
-MAX = 200
-HI  = 100   ;//range of random numbers 
-LO  = 999
+MIN   = 10    ;//range of user input
+MAX   = 200
+LO    = 100   ;//range of random numbers 
+HI    = 999
+RANGE = HI-LO+1
 SPACING     = 3     ;minimum spaces between numbers
 PER_LINE    = 10     ;number of terms to display per line
 
@@ -43,7 +44,9 @@ request         DWORD   ?
 
 .code
 main PROC
-	
+
+    call Randomize ;seed random generator
+
 	call Introduction
 
     push OFFSET request
@@ -51,6 +54,12 @@ main PROC
 
     mDumpMem OFFSET request, 1, TYPE request 
     ;mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
+
+    push request
+    push OFFSET array
+    call FillArray
+
+   
     
 	exit	; exit to operating system
 main ENDP
@@ -167,6 +176,52 @@ store_and_return:
 	pop ebp
     ret 4
 getUserData  ENDP
+
+
+;#################################################
+;PROCEDURE:      Fill Array   
+;
+;Purpose:   Fill array with request number of random values
+;Recieves:  Adress of Array
+;           number of values to genearate
+;Returns:   modifies Array
+;
+;#################################################
+;X_param EQU DWORD PTR [ebp+8]
+;Y_param EQU DWORD PTR [ebp+12]
+
+FillArray PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    ;//save callers registers
+    push eax
+    push ecx
+
+
+    ;//retrive paramaters
+    mov ecx, [ebp+12]
+
+next_random:
+
+    ;///generate random in range and adjust
+    mov eax, RANGE
+    call RandomRange
+    add eax, LO
+    
+    call WriteDec
+    call crlf
+
+    loop next_random
+
+
+    ;//restore callers registers
+    pop ecx
+    pop eax
+
+    pop ebp     ;restore callers stack frame
+    Ret 8
+FillArray ENDP
 
 
 
