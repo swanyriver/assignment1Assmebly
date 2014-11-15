@@ -246,7 +246,7 @@ FillArray ENDP
 ;
 ;Purpose:   Output the contents of Array
 ;Recieves:  Adress of Array
-;           number of values to genearate
+;           number of values in array
 ;           Adress of string to display
 ;Returns:   none
 ;
@@ -264,7 +264,7 @@ DisplayList PROC
 
     ;//retrive paramaters
     mov edx, [ebp+16]   ;adress of string
-    mov ecx, [ebp+12]   ;num to generate
+    mov ecx, [ebp+12]   ;num values requested
     mov esi, [ebp+8]    ;array adress
 
     ;//display title
@@ -316,7 +316,7 @@ DisplayList ENDP
 ;
 ;Purpose:   find or calculate and display median 
 ;Recieves:  Adress of Array
-;           number of values to genearate
+;           number of values in array
 ;Returns:   none
 ;
 ;#################################################
@@ -331,20 +331,20 @@ DisplayMedian PROC
     push esi
 
     ;//retrive paramaters
-    mov ecx, [ebp+12]   ;num to generate
+    mov ecx, [ebp+12]   ;num values requested
     mov esi, [ebp+8]    ;array adress
 
     mov edx, OFFSET median_s
     call WriteString
 
     ;///find median/////
-    btc ecx, 0
+    btr ecx, 0
     jc odd_num_elements
 
     ;//average two middle elements
     movzx eax, WORD PTR [esi + ecx ]
     add ax, WORD PTR [esi + ecx - TYPE WORD]
-    shr ax, 1
+    shr eax, 1
     jc round_up
     jmp display_result
 
