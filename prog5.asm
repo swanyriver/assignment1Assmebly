@@ -8,6 +8,8 @@ TITLE assingment 5     (prog5.asm)
 ;              these elements and display them again, along with their median value. 
 
 INCLUDE Irvine32.inc
+INCLUDE Macros.inc
+
 
 ;////////////////PROGRAM CONSTANTS//////////////////
 MIN = 10    ;//range of user input
@@ -31,7 +33,7 @@ mumPrompt_s     BYTE    "How many numbers should be generated? ",0
 
 
 ;/////////////ERROR STRINGS//////////////////////////
-outOfRange_s    BYTE    "please keep your input greater than 0 and less than or equal to ",0 ;constant appended
+outOfRange_s    BYTE    "input out of range",13,10,0
 
 ;/////////////PROGRAM DATA/////////////////////////
 array           WORD    MAX dup (?)
@@ -43,6 +45,12 @@ request         DWORD   ?
 main PROC
 	
 	call Introduction
+
+    push OFFSET request
+    call getUserData
+
+    mDumpMem OFFSET request, 1, TYPE request 
+    ;mDumpMem OFFSET primes_a, LENGTHOF primes_a, TYPE primes_a 
     
 	exit	; exit to operating system
 main ENDP
@@ -88,6 +96,77 @@ main ENDP
 	ret
 
 Introduction ENDP
+
+;#################################################
+;PROCEDURE:     get user data
+;
+;Purpose:   call input procedure to get num primes 
+;           to be displayed
+;Recieves:  refrence to request variable
+;Returns:   value in refrenced variable
+;
+;#################################################
+getUserData  PROC
+
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    ;///save callers registers
+    push edx
+    push eax
+
+input: 
+    ;display input prompt with number
+    mov edx, OFFSET mumPrompt_s
+    call WriteString
+
+    ;display range of input
+    mov eax, MIN
+    call WriteDec
+    mov edx, OFFSET range_to_s
+    call WriteString
+    mov eax, MAX
+    call WriteDec
+
+    mov al, ':'
+    call WriteChar
+    mov al, " "
+    call WriteChar
+
+
+    ;///retrieve and validate input
+    call ReadInt
+
+    jo input            ;overflow indicated invalid input
+
+    ;/////check input for range if(input>MAX || input<MIN)
+    cmp eax, MAX
+    jg outofBounds      ;input MAX
+
+    cmp eax,MIN
+    jl outofBounds    ;input<MIN
+
+    ;//ELSE valid input
+    jmp store_and_return
+
+outofBounds:
+    ;//display error message and input again
+    mov edx, OFFSET outOfRange_s
+    call WriteString
+
+    jmp input
+
+store_and_return:
+    mov edx, [ebp+8]
+    mov [edx], eax   
+
+    ;//restore callers registers
+    pop eax
+    pop edx
+
+	pop ebp
+    ret 4
+getUserData  ENDP
 
 
 
