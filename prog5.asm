@@ -67,7 +67,15 @@ main PROC
 	push request
     push OFFSET array
     call DisplayList
-   
+
+    push request
+    push OFFSET array
+    call DisplayMedian
+
+    push OFFSET sorted_s
+    push request
+    push OFFSET array
+    call DisplayList
     
 	exit	; exit to operating system
 main ENDP
@@ -195,9 +203,6 @@ getUserData  ENDP
 ;Returns:   modifies Array
 ;
 ;#################################################
-;X_param EQU DWORD PTR [ebp+8]
-;Y_param EQU DWORD PTR [ebp+12]
-
 FillArray PROC
     push ebp
     mov ebp,esp ;set up stack frame
@@ -305,6 +310,64 @@ no_return_line:
     pop ebp     ;restore callers stack frame
     Ret 12
 DisplayList ENDP
+
+;#################################################
+;PROCEDURE:      Display Median
+;
+;Purpose:   find or calculate and display median 
+;Recieves:  Adress of Array
+;           number of values to genearate
+;Returns:   none
+;
+;#################################################
+DisplayMedian PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    ;//save callers registers
+    push eax
+    push ecx
+    push edx
+    push esi
+
+    ;//retrive paramaters
+    mov ecx, [ebp+12]   ;num to generate
+    mov esi, [ebp+8]    ;array adress
+
+    mov edx, OFFSET median_s
+    call WriteString
+
+    ;///find median/////
+    btc ecx, 0
+    jc odd_num_elements
+
+    ;//average two middle elements
+    movzx eax, WORD PTR [esi + ecx ]
+    add ax, WORD PTR [esi + ecx - TYPE WORD]
+    shr ax, 1
+    jc round_up
+    jmp display_result
+
+round_up:
+    inc eax
+    jmp display_result
+
+odd_num_elements:
+    movzx eax, WORD PTR [esi + ecx ]
+
+display_result:
+    call WriteDec
+    call crlf
+
+    ;//restore callers registers
+    pop esi
+    pop edx
+    pop ecx
+    pop eax
+
+    pop ebp     ;restore callers stack frame
+    Ret
+DisplayMedian ENDP
 
 
 END main
