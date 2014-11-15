@@ -281,7 +281,7 @@ display_next_number:
     ;//add spaces
     push ecx
     mov ecx, SPACING
-    mov al, '-'
+    mov al, ' '
     space: call WriteChar
     loop space
     pop ecx
@@ -337,6 +337,16 @@ DisplayMedian PROC
     mov edx, OFFSET median_s
     call WriteString
 
+
+    ;////////////MEDIAN ALGORITHM////////////////////////////
+    ;// as the array is made up of 2 byte WORDs the 
+    ;// array adress + request (num elements in the array)
+    ;// will be pointing to
+    ;// ODD NUM ELEMENTS:   median adress + 1 BYTE
+    ;// EVEN NUM ELEMENTS:  first element of second half
+    ;// BTR is used to test and clear least signifigant bit
+    ;////////////////////////////////////////////////////////
+
     ;///find median/////
     btr ecx, 0
     jc odd_num_elements
@@ -344,8 +354,8 @@ DisplayMedian PROC
     ;//average two middle elements
     movzx eax, WORD PTR [esi + ecx ]
     add ax, WORD PTR [esi + ecx - TYPE WORD]
-    shr eax, 1
-    jc round_up
+    shr eax, 1  ;div by 2 to find average
+    jc round_up ;carry bit indicates result of xx.5
     jmp display_result
 
 round_up:
