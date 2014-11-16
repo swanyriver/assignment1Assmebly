@@ -409,6 +409,8 @@ Merge_Sort PROC
     push esi
     push edx
     push ecx
+    push eax
+    push ebx
 
     ;//////base cases////////////////
     mov dx, [ebp+12]
@@ -438,9 +440,6 @@ recursive_case:
     rep movsw
 
 
-
-
-    ;/////recursive case//////////
     ;//LEFT Sort
     mov edx, DWORD PTR [ebp+12]
     shr edx, 1
@@ -467,6 +466,55 @@ even_num:
 
 
     ;///merge sorted lists
+    ;//ecx points to mid list and will serve as sentinal for left
+    ;//edx will serve as alternate source pointer from right list
+    ;//eax will serve as sentinal for right list
+    mov eax, edi ;//currently pointing at just after list end
+    mov edx, ecx
+    mov esi, esp 
+    mov edi, DWORD PTR [ebp+8]
+
+merge_next:
+    cmp esi, ecx
+    je finish_right_list
+
+    cmp edx, eax
+    je finish_left_list
+
+    mov ebx, [esi]
+    cmp ebx, [edx]
+
+    jb add_from_left
+
+add_from_right:
+    mov bx, WORD PTR [edx]
+	mov WORD PTR [edi], bx
+    add edi, TYPE WORD
+    jmp increment_destination
+
+add_from_left:
+    mov bx, WORD PTR [esi]
+	mov WORD PTR [edi], bx
+    add esi, TYPE WORD
+
+increment_destination:
+    add edi, TYPE WORD
+    jmp merge_next
+
+finish_right_list:
+    cmp edx, eax
+    je return
+    mov bx, WORD PTR [edx]
+    mov WORD PTR [edi], bx
+    add edx, TYPE WORD
+    add edi, TYPE WORD
+    jmp finish_right_list
+
+finish_left_list:    
+    cmp esi, ecx
+    je return
+    movsw
+    jmp finish_left_list
 
 return:    
 
@@ -475,6 +523,8 @@ return:
     ;add esp,                      ;free local variables
 
     ;//restore callers registers
+    pop ebx
+    pop eax
     pop ecx
     pop edx
     pop esi
@@ -493,9 +543,6 @@ Merge_Sort ENDP
 ;Returns:   swaps these valus
 ;
 ;#################################################
-;X_param EQU DWORD PTR [ebp+8]
-;Y_param EQU DWORD PTR [ebp+12]
-
 exchange PROC
     push ebp
     mov ebp,esp ;set up stack frame
@@ -518,7 +565,7 @@ exchange PROC
     pop eax
 
     pop ebp     ;restore callers stack frame
-    Ret
+    Ret 8
 exchange ENDP
 
 END main
