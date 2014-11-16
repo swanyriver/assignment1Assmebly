@@ -48,7 +48,7 @@ request         DWORD   ?
 .code
 main PROC
 
-    call Randomize ;seed random generator
+    ;call Randomize ;seed random generator
 
 	call Introduction
 
@@ -407,6 +407,19 @@ Merge_Sort PROC
     push eax
     push ebx
 
+    ;///////////////////////DEBUG
+    ;///////////////////////DEBUG
+    .data
+    recieved BYTE "recieved :",0
+    .code
+    push OFFSET recieved
+    push [ebp+12]
+    push [ebp+8]
+    call DisplayList
+    call crlf
+    ;///////////////////////DEBUG
+    ;///////////////////////DEBUG
+
     ;//////base cases////////////////
     mov dx, [ebp+12]
     ;//if only one element return
@@ -470,6 +483,58 @@ even_num:
     mov edx, ecx
     mov esi, esp 
     mov edi, DWORD PTR [ebp+8]
+
+;//////////////////////////////DEBUG////////////////
+    .data
+    left BYTE "left: ",0
+    right BYTE "right: ",0
+
+.code
+    push esi
+    push edx
+    push eax
+
+    push edx
+    mov edx, OFFSET left
+    call WriteString
+    pop edx
+left_start:
+    cmp esi, ecx
+    je left_done
+    movzx eax, word ptr [esi]
+    call WriteDec
+    mov ax, ' '
+    call WriteChar
+    add esi, 2
+    jmp left_start
+
+left_done:
+    pop eax
+    push eax
+    mov ecx, eax
+
+    push edx
+    mov edx, OFFSET right
+    call WriteString
+    pop edx
+right_start:
+    cmp edx, ecx
+    je right_done
+    movzx eax, word ptr [edx]
+    call WriteDec
+    mov ax, ' '
+    call WriteChar
+    add edx, 2
+    jmp right_start
+    
+right_done:
+    pop eax
+    pop edx
+    pop esi
+
+    call crlf
+;////////////////////////////////////////////////////////
+
 
 merge_next:
     cmp esi, ecx
@@ -548,16 +613,23 @@ exchange PROC
     push eax
     push ebx
     push esi
+    push edi
 
-    movzx eax, WORD PTR [ebp+8]
-    movzx ebx, WORD PTR [ebp+12]
+    mov esi, DWORD PTR [ebp + 8]
+    mov edi, DWORD PTR [ebp + 12]
 
-    mov esi, [ebp+8]
+    movzx eax, WORD PTR [esi]
+    movzx ebx, WORD PTR [edi]
+
+    cmp ax,bx
+    jb return_without_exchange
+
     mov [esi], bx
+    mov [edi], ax
 
-    mov esi, [ebp+12]
-    mov [esi], ax
+return_without_exchange:
 
+    pop edi
     pop esi
     pop ebx
     pop eax
