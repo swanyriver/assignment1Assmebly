@@ -414,10 +414,15 @@ Merge_Sort PROC
     cmp dx, 2
     jne recursive_case
 
+    ;//check if exchange needed
     mov esi, DWORD PTR [ebp+8]
+    mov bx, word ptr [esi]
+    cmp bx, word ptr [esi+ TYPE WORD]
+    ja base_case_return
+    
     push esi
     add esi, TYPE WORD
-	push esi
+    push esi
     call exchange
 
     jmp base_case_return
@@ -553,13 +558,8 @@ exchange PROC
     movzx eax, WORD PTR [esi]
     movzx ebx, WORD PTR [edi]
 
-    cmp ax,bx
-    jb return_without_exchange
-
     mov [esi], bx
     mov [edi], ax
-
-return_without_exchange:
 
     pop edi
     pop esi
