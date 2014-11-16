@@ -68,14 +68,9 @@ main PROC
     push OFFSET array
     call DisplayList
 
-    ;/////debug^M
-    mov eax, 0AAh
-    mov esi, 0BBh
-    mov edi, 0CCh
     push request
     push OFFSET array
     call Merge_Sort
-
 
     push request
     push OFFSET array
@@ -416,7 +411,7 @@ Merge_Sort PROC
     mov dx, [ebp+12]
     ;//if only one element return
     cmp dx, 1
-    je return
+    je base_case_return
 
     ;//if onlt 2 elements exchange and return
     cmp dx, 2
@@ -425,9 +420,10 @@ Merge_Sort PROC
     mov esi, DWORD PTR [ebp+8]
     push esi
     add esi, TYPE WORD
+	push esi
     call exchange
 
-    jmp return
+    jmp base_case_return
 
 recursive_case:
     ;create and fill temporary array
@@ -441,10 +437,11 @@ recursive_case:
 
 
     ;//LEFT Sort
+    mov esi, esp
     mov edx, DWORD PTR [ebp+12]
     shr edx, 1
     push edx
-    push esp
+    push esi
     call Merge_Sort
 
 
@@ -489,7 +486,7 @@ merge_next:
 add_from_right:
     mov bx, WORD PTR [edx]
 	mov WORD PTR [edi], bx
-    add edi, TYPE WORD
+    add edx, TYPE WORD
     jmp increment_destination
 
 add_from_left:
@@ -517,11 +514,12 @@ finish_left_list:
     jmp finish_left_list
 
 return:    
-
+	
     add esp, DWORD PTR [ebp+12]	   ;free temporary array
     add esp, DWORD PTR [ebp+12]
-    ;add esp,                      ;free local variables
 
+
+base_case_return:
     ;//restore callers registers
     pop ebx
     pop eax
