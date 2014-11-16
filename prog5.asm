@@ -68,6 +68,15 @@ main PROC
     push OFFSET array
     call DisplayList
 
+    ;/////debug^M
+    mov eax, 0AAh
+    mov esi, 0BBh
+    mov edi, 0CCh
+    push request
+    push OFFSET array
+    call Merge_Sort
+
+
     push request
     push OFFSET array
     call DisplayMedian
@@ -378,6 +387,67 @@ display_result:
     pop ebp     ;restore callers stack frame
     Ret
 DisplayMedian ENDP
+
+;//////////////////////////////////////////////////////////////////////
+;/////////////MERGE SORT FUNCTIONS/////////////////////////////////////
+;//////////////////////////////////////////////////////////////////////
+;#################################################
+;PROCEDURE:      Merge Sort
+;
+;Purpose:   Recursivly sort an array of unsigned WORD integers
+;Recieves:  adress of array
+;           num elements in array
+;Returns:   none
+;
+;#################################################
+Merge_Sort PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+    
+    ;//save callers registers
+    push edi
+    push esi
+    push edx
+    push ecx
+
+    ;create and fill temporary array
+	sub esp, DWORD PTR [ebp+12]
+    sub esp, DWORD PTR [ebp+12]
+    mov esi, DWORD PTR [ebp+8]
+    mov edi, esp
+
+    mov ecx, DWORD PTR [ebp+12]
+    rep movsw
+
+
+    mov ecx, DWORD PTR [ebp+12]
+    mov esi, esp
+
+
+    print:    movzx eax, WORD PTR [esi]
+    call WriteDec
+    add esi, 2
+    call crlf
+    loop print
+
+    
+
+
+    add esp, DWORD PTR [ebp+12]	   ;free temporary array
+    add esp, DWORD PTR [ebp+12]
+    ;add esp,                      ;free local variables
+
+    ;//restore callers registers
+    pop ecx
+    pop edx
+    pop esi
+    pop edi
+
+    pop ebp      ;restore callers stack frame
+    
+    ret 8
+Merge_Sort ENDP
+
 
 
 END main
