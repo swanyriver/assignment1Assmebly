@@ -8,7 +8,6 @@ TITLE assingment 5     (prog5.asm)
 ;              these elements and display them again, along with their median value. 
 
 INCLUDE Irvine32.inc
-INCLUDE Macros.inc
 
 
 ;////////////////PROGRAM CONSTANTS//////////////////
@@ -48,20 +47,16 @@ request         DWORD   ?
 .code
 main PROC
 
-    ;call Randomize ;seed random generator
+    call Randomize ;seed random generator
 
 	call Introduction
 
     push OFFSET request
     call getUserData
 
-    mDumpMem OFFSET request, 1, TYPE request 
-
     push request
     push OFFSET array
     call FillArray
-
-    mDumpMem OFFSET array, LENGTHOF array, TYPE array 
 
 	push OFFSET unsorted_s
 	push request
@@ -272,6 +267,7 @@ DisplayList PROC
     mov esi, [ebp+8]    ;array adress
 
     ;//display title
+    call crlf
     call WriteString
 
     mov ebx, PER_LINE
@@ -338,6 +334,7 @@ DisplayMedian PROC
     mov ecx, [ebp+12]   ;num values requested
     mov esi, [ebp+8]    ;array adress
 
+    call crlf
     mov edx, OFFSET median_s
     call WriteString
 
@@ -407,19 +404,6 @@ Merge_Sort PROC
     push eax
     push ebx
 
-    ;///////////////////////DEBUG
-    ;///////////////////////DEBUG
-    .data
-    recieved BYTE "recieved :",0
-    .code
-    push OFFSET recieved
-    push [ebp+12]
-    push [ebp+8]
-    call DisplayList
-    call crlf
-    ;///////////////////////DEBUG
-    ;///////////////////////DEBUG
-
     ;//////base cases////////////////
     mov dx, [ebp+12]
     ;//if only one element return
@@ -484,61 +468,6 @@ even_num:
     mov esi, esp 
     mov edi, DWORD PTR [ebp+8]
 
-;//////////////////////////////DEBUG////////////////
-    .data
-    left BYTE "left: ",0
-    right BYTE "right: ",0
-
-.code
-    push esi
-    push edx
-    push eax
-	push ecx
-
-    push edx
-    mov edx, OFFSET left
-    call WriteString
-    pop edx
-left_start:
-    cmp esi, ecx
-    je left_done
-    movzx eax, word ptr [esi]
-    call WriteDec
-    mov ax, ' '
-    call WriteChar
-    add esi, 2
-    jmp left_start
-
-left_done:
-    pop eax
-    push eax
-    mov ecx, eax
-
-    push edx
-    mov edx, OFFSET right
-    call WriteString
-    pop edx
-right_start:
-    cmp edx, ecx
-    je right_done
-    movzx eax, word ptr [edx]
-    call WriteDec
-    mov ax, ' '
-    call WriteChar
-    add edx, 2
-    jmp right_start
-    
-right_done:
-	pop ecx
-    pop eax
-    pop edx
-    pop esi
-
-    call crlf
-	nop
-;////////////////////////////////////////////////////////
-
-
 merge_next:
     cmp esi, ecx
     je finish_right_list
@@ -582,19 +511,6 @@ finish_left_list:
     jmp finish_left_list
 
 return:    
-
-    ;///////////////////////DEBUG
-    ;///////////////////////DEBUG
-    .data
-    outgoing BYTE "outgoing :",0
-    .code
-    push OFFSET outgoing
-    push [ebp+12]
-    push [ebp+8]
-    call DisplayList
-    call crlf
-    ;///////////////////////DEBUG
-    ;///////////////////////DEBUG
 	
     add esp, DWORD PTR [ebp+12]	   ;free temporary array
     add esp, DWORD PTR [ebp+12]
