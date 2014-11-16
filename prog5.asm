@@ -493,6 +493,7 @@ even_num:
     push esi
     push edx
     push eax
+	push ecx
 
     push edx
     mov edx, OFFSET left
@@ -528,11 +529,13 @@ right_start:
     jmp right_start
     
 right_done:
+	pop ecx
     pop eax
     pop edx
     pop esi
 
     call crlf
+	nop
 ;////////////////////////////////////////////////////////
 
 
@@ -543,10 +546,10 @@ merge_next:
     cmp edx, eax
     je finish_left_list
 
-    mov ebx, [esi]
-    cmp ebx, [edx]
+    mov bx, word ptr [esi]
+    cmp bx, [edx]
 
-    jb add_from_left
+    ja add_from_left
 
 add_from_right:
     mov bx, WORD PTR [edx]
@@ -579,6 +582,19 @@ finish_left_list:
     jmp finish_left_list
 
 return:    
+
+    ;///////////////////////DEBUG
+    ;///////////////////////DEBUG
+    .data
+    outgoing BYTE "outgoing :",0
+    .code
+    push OFFSET outgoing
+    push [ebp+12]
+    push [ebp+8]
+    call DisplayList
+    call crlf
+    ;///////////////////////DEBUG
+    ;///////////////////////DEBUG
 	
     add esp, DWORD PTR [ebp+12]	   ;free temporary array
     add esp, DWORD PTR [ebp+12]
