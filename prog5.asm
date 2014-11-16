@@ -410,6 +410,24 @@ Merge_Sort PROC
     push edx
     push ecx
 
+    ;//////base cases////////////////
+    mov dx, [ebp+12]
+    ;//if only one element return
+    cmp dx, 1
+    je return
+
+    ;//if onlt 2 elements exchange and return
+    cmp dx, 2
+    jne recursive_case
+
+    mov esi, DWORD PTR [ebp+8]
+    push esi
+    add esi, TYPE WORD
+    call exchange
+
+    jmp return
+
+recursive_case:
     ;create and fill temporary array
 	sub esp, DWORD PTR [ebp+12]
     sub esp, DWORD PTR [ebp+12]
@@ -420,18 +438,37 @@ Merge_Sort PROC
     rep movsw
 
 
+
+
+    ;/////recursive case//////////
+    ;//LEFT Sort
+    mov edx, DWORD PTR [ebp+12]
+    shr edx, 1
+    push edx
+    push esp
+    call Merge_Sort
+
+
+    ;//RIGHT Sort
     mov ecx, DWORD PTR [ebp+12]
-    mov esi, esp
+    and ecx, 0FFFFFFFEh              ;//clear LSB
+    add ecx, esp
+
+    mov edx, DWORD PTR [ebp+12]
+    shr edx, 1
+    jc odd_num
+    jmp even_num
+odd_num:    
+    inc edx
+even_num:
+    push edx
+    push ecx
+    call Merge_Sort
 
 
-    print:    movzx eax, WORD PTR [esi]
-    call WriteDec
-    add esi, 2
-    call crlf
-    loop print
+    ;///merge sorted lists
 
-    
-
+return:    
 
     add esp, DWORD PTR [ebp+12]	   ;free temporary array
     add esp, DWORD PTR [ebp+12]
@@ -448,6 +485,40 @@ Merge_Sort PROC
     ret 8
 Merge_Sort ENDP
 
+;#################################################
+;PROCEDURE:      exchange
+;
+;Purpose:   to exchange two array items
+;Recieves:  the adress of two WORD values
+;Returns:   swaps these valus
+;
+;#################################################
+;X_param EQU DWORD PTR [ebp+8]
+;Y_param EQU DWORD PTR [ebp+12]
 
+exchange PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    push eax
+    push ebx
+    push esi
+
+    movzx eax, WORD PTR [ebp+8]
+    movzx ebx, WORD PTR [ebp+12]
+
+    mov esi, [ebp+8]
+    mov [esi], bx
+
+    mov esi, [ebp+12]
+    mov [esi], ax
+
+    pop esi
+    pop ebx
+    pop eax
+
+    pop ebp     ;restore callers stack frame
+    Ret
+exchange ENDP
 
 END main
