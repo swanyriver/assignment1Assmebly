@@ -507,7 +507,8 @@ finish_left_list:
 
 return:    
 	
-    add esp, DWORD PTR [ebp+12]	   ;free temporary array
+    ;free temporary array
+    add esp, DWORD PTR [ebp+12]	   
     add esp, DWORD PTR [ebp+12]
 
 
@@ -537,20 +538,25 @@ exchange PROC
     push ebp
     mov ebp,esp ;set up stack frame
 
+    ;//save callers registers
     push eax
     push ebx
     push esi
     push edi
 
+    ;//retrive paramaters
     mov esi, DWORD PTR [ebp + 8]
     mov edi, DWORD PTR [ebp + 12]
 
+    ;//load pointed to values into registers
     mov ax, WORD PTR [esi]
-    mov bx, WORD PTR [edi]
+    mov bx, W
 
+    ;//move values into alternate memory locations
     mov [esi], bx
     mov [edi], ax
 
+    ;//restore callers registers
     pop edi
     pop esi
     pop ebx
