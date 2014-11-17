@@ -486,18 +486,13 @@ merge_next:
     ja add_from_left
 
 add_from_right:
-    mov bx, WORD PTR [edx]
-	mov WORD PTR [edi], bx
-    add edx, TYPE WORD
-    jmp increment_destination
+    xchg edx, esi
+    movsw
+    xchg edx, esi
+    jmp merge_next
 
 add_from_left:
-    mov bx, WORD PTR [esi]
-	mov WORD PTR [edi], bx
-    add esi, TYPE WORD
-
-increment_destination:
-    add edi, TYPE WORD
+    movsw
     jmp merge_next
 
 finish_right_list:
@@ -555,8 +550,8 @@ exchange PROC
     mov esi, DWORD PTR [ebp + 8]
     mov edi, DWORD PTR [ebp + 12]
 
-    movzx eax, WORD PTR [esi]
-    movzx ebx, WORD PTR [edi]
+    mov ax, WORD PTR [esi]
+    mov bx, WORD PTR [edi]
 
     mov [esi], bx
     mov [edi], ax
