@@ -496,19 +496,14 @@ add_from_left:
     jmp merge_next
 
 finish_right_list:
-    cmp edx, eax
-    je return
-    mov bx, WORD PTR [edx]
-    mov WORD PTR [edi], bx
-    add edx, TYPE WORD
-    add edi, TYPE WORD
-    jmp finish_right_list
+    mov ecx, eax
+    mov esi, edx
 
-finish_left_list:    
-    cmp esi, ecx
-    je return
-    movsw
-    jmp finish_left_list
+finish_left_list:
+    sub ecx, esi
+    shr ecx, 1
+    rep movsw
+
 
 return:    
 	
