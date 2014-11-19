@@ -5,7 +5,9 @@ TITLE assingment 5     (prog5.asm)
 
 ; Description: This program will request a number of elements to randomly generate.
 ;              It will display these randomly generated elements and then sort these
-;              these elements and display them again, along with their median value. 
+;              these elements and display them again, along with their median value.
+;
+; Extra-Credit: I implemented a recursive merge-sort sorting algorithm 
 
 INCLUDE Irvine32.inc
 
@@ -437,6 +439,7 @@ recursive_case:
     mov esi, DWORD PTR [ebp+8]
     mov edi, esp
 
+    cld
     mov ecx, DWORD PTR [ebp+12]
     rep movsw
 
@@ -475,6 +478,7 @@ even_num:
     mov edx, ecx
     mov esi, esp 
     mov edi, DWORD PTR [ebp+8]
+    cld
 
 merge_next:
     cmp esi, ecx
