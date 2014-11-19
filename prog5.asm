@@ -32,7 +32,7 @@ range_to_s      BYTE    " to ",0
 mumPrompt_s     BYTE    "How many numbers should be generated? ",0
 unsorted_s      BYTE    "Unsorted Random Numbers:",13,10,0
 sorted_s        BYTE    "Sorted Numbers:",13,10,0
-median_s        BYTE    "The median is: ", 0
+median_s        BYTE    13,10,"The median is: ", 0
 
 
 ;/////////////ERROR STRINGS//////////////////////////
@@ -76,6 +76,9 @@ main PROC
     push OFFSET array
     call DisplayList
     
+	call CrLf
+	call CrLf
+
 	exit	; exit to operating system
 main ENDP
 
@@ -550,7 +553,7 @@ exchange PROC
 
     ;//load pointed to values into registers
     mov ax, WORD PTR [esi]
-    mov bx, W
+    mov bx, WORD PTR [edi]
 
     ;//move values into alternate memory locations
     mov [esi], bx
