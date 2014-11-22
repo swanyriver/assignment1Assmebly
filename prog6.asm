@@ -57,6 +57,7 @@ factorial  PROC
     
     push eax
     push edx
+    push edi
 
     ;//check for base case
     mov eax, [ebp+8]
@@ -87,6 +88,7 @@ recursive:
     ;//free local variable
     add esp, 4
 return:
+    pop edi
     pop edx
     pop eax
     
