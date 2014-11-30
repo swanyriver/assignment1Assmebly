@@ -31,6 +31,8 @@ ENDM
 ;////////////////PROGRAM CONSTANTS//////////////////
 MIN   = 3    ;//range of n
 MAX   = 12
+YES   = 1
+NO    = 0
 
 .data
 ;//////////////STRINGS///////////////////////////////
@@ -52,7 +54,7 @@ again_s         BYTE    13,10,13,10,"Would you like another problem? (y/n): ",0
 
 
 ;//////////////////ERROR MESSAGES////////////////////
-invalid_again_s BYTE    13,10,"Please limit your response to 'y' or 'n'",0
+invalid_yn_s    BYTE    13,10,"Please limit your response to 'y' or 'n'",0
 invalid_alpha_s BYTE    13,10,"Please limit your response numeric characters only",0
 invalid_frac_s  BYTE    13,10,"The answer will always be a whole number",0
 invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
@@ -62,12 +64,82 @@ invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
 .code
 main PROC
 
-    WriteStrM invalid_again_s
+loop_top:
+    push NO
+    push esp
+    push OFFSET again_s
+
+    call yesOrNo
+    WriteStrM invalid_of_s
+    pop eax
+    cmp eax, YES
+
+    je yesANS
+    jmp loop_top 
+
+    yesANS: WriteStrM invalid_frac_s
+    jmp loop_top
+
+
+    
     
 	exit	; exit to operating system
 main ENDP
 
 
+;#################################################
+;PROCEDURE:    yes or no  
+;
+;Purpose:   recieve an afirmative or negative answer from user
+;Recieves:   address in wich to store result
+;            OFFSET of input prompt
+;Returns:   places YES/NO constant in specified location
+;
+;#################################################
+yesOrNo PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    push edx
+    push eax
+    push edi
+
+    ;//output destination
+    mov edi, [ebp+12]
+
+prompt:
+    mov edx, [ebp+8]
+    call WriteString
+
+    ;//get character and convert response to lower case
+    call ReadChar
+    or al, 20h 
+
+    ;//check for answer (y/n)
+    cmp al, 'y'
+    je answer_y
+    cmp al, 'n'
+    je answer_n
+
+    ;//invalid input
+    WriteStrM invalid_yn_s
+    jmp prompt
+
+answer_y:
+    mov DWORD PTR [edi], YES
+    jmp return_yn
+
+answer_n:
+    mov DWORD PTR [edi], NO 
+
+return_yn:
+    pop edi
+    pop eax
+    pop edx
+
+    pop ebp     ;restore callers stack frame
+    Ret 8
+yesOrNo ENDP
 
 ;#################################################
 ;PROCEDURE:    Factorial  
@@ -94,7 +166,7 @@ factorial  PROC
     ;///BASE CASE
     mov edi, [ebp+12]
 	mov DWORD PTR [edi], 1
-    jmp return
+    jmp return_fact
 
 recursive:
     ;reserve space for result and pass adress
@@ -114,7 +186,7 @@ recursive:
 
     ;//free local variable
     add esp, 4
-return:
+return_fact:
     pop edi
     pop edx
     pop eax
