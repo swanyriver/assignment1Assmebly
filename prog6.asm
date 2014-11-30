@@ -3,44 +3,71 @@ TITLE assingment 6     (prog6.asm)
 ; Author:Brandon Swanson  swansonb@onid.orst.edu
 ; Course / Project ID   CS271-400 Fall14 Programming Assignment #6  Date: 12/07/14
 
-; Description: This program will 
+; Description: This program will test the useres ability to calculate the possible
+;               Combinations of a given size from a given set, C(n,r), that is generated
+;               Randomly.  It will check if their answer is correct and inform them of
+;               the correct answer.
 
 
 INCLUDE Irvine32.inc
 INCLUDE Macros.inc
 
-; (insert constant definitions here)
+;////////////////MACROS//////////////////
+;#################################################
+;MACRO:    write string  
+;
+;Purpose:   display a string
+;Recieves:  string variable
+;Returns:   none
+;
+;#################################################
+WriteStrM MACRO buffer
+    push edx
+    mov edx, OFFSET buffer
+    call WriteString
+    pop edx
+ENDM
+
+;////////////////PROGRAM CONSTANTS//////////////////
+MIN   = 3    ;//range of n
+MAX   = 12
 
 .data
+;//////////////STRINGS///////////////////////////////
+intro_s         BYTE    "Welcome to Combinations Calculator",13,10
+                BYTE    "Programmed by Brandon Swanson",13,10,0
+about_s         BYTE    13,10,"This program will quiz you on combination problems"
+                BYTE    13,10,"you will enter the number of possible choices and it"
+                BYTE    13,10,"will let you know if you were correct",0
+problems_s      BYTE    13,10,"Problem #",0
+elements_s      BYTE    13,10,"Number of elements in the combinations: ",0
+choices_s       BYTE    13,10,"Number of elements from wich to choose: ",0
+answerPrompts_s BYTE    13,10,"How many ways can you choose: ",0
+answerReveal_s  BYTE    13,10," elements can be chosen from "
+answerReveal2_s BYTE    " elements in "
+answerReveal3_s BYTE    " different ways",0
+correct_s       BYTE    13,10,"Well Done!, you got the answer correct",0
+wrong_s         BYTE    13,10,"It looks like you didn't get, better luck on the next one",0
+again_s         BYTE    13,10,13,10,"Would you like another problem? (y/n): ",0
 
-result DWORD ?
-colon_s byte "! = ",0     
+
+;//////////////////ERROR MESSAGES////////////////////
+invalid_again_s BYTE    13,10,"Please limit your response to 'y' or 'n'",0
+invalid_alpha_s BYTE    13,10,"Please limit your response numeric characters only",0
+invalid_frac_s  BYTE    13,10,"The answer will always be a whole number",0
+invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
+                BYTE    13,10,"     also too large to be the answer",0
+
 
 .code
 main PROC
 
-    mov ecx, 12
-top:
-    push OFFSET result
-    push ecx
-
-    call factorial
-
-    mov eax, ecx
-    call writedec
-
-    mwritestring OFFSET colon_s
-
-    mov eax, result
-    call writedec
-    call crlf
-
-    loop top
-
-
-
+    WriteStrM invalid_again_s
+    
 	exit	; exit to operating system
 main ENDP
+
+
 
 ;#################################################
 ;PROCEDURE:    Factorial  
