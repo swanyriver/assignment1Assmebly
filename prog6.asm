@@ -52,29 +52,13 @@ ENDM
 ;
 ;#################################################
 ShowScoreM MACRO correct, attempts
-    push edx
-    push eax
 
-    mov edx, OFFSET correct_num_s
-    call WriteString
+    WriteStrM correct_num_s
+    WriteDcM correct
+    WriteStrM outof_s
+    writeDcM attempts
+    WriteStrM questions_s
 
-    mov eax, correct
-    call writeDec
-    ;//second paramater may be eax, restored and saved again
-    pop eax
-    push eax
-
-    mov edx, OFFSET outof_s
-    call WriteString
-
-    mov eax, attempts
-    call writeDec
-
-    mov edx, OFFSET questions_s
-    call WriteString
-
-    pop eax
-    pop edx
 ENDM
 
 ;////////////////PROGRAM CONSTANTS//////////////////
@@ -232,8 +216,18 @@ OneProblem PROC
     push solution_local_op
     call ShowAnswer
 
+    ;//store users score
+    mov eax, answer_local_op
+    cmp eax, solution_local_op
+    jne User_incorrect
+    mov eax, [ebp+12]
+    mov DWORD PTR [eax], YES
+    jmp return_op
+User_incorrect:
+    mov eax, [ebp+12]
+    mov DWORD PTR [eax], NO
 
-
+return_op:
     ;///restore registers 
     pop eax
 
