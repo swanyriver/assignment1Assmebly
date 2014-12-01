@@ -31,6 +31,7 @@ ENDM
 ;////////////////PROGRAM CONSTANTS//////////////////
 MIN   = 3    ;//range of n
 MAX   = 12
+RANGE = MAX-MIN+1
 YES   = 1
 NO    = 0
 
@@ -63,10 +64,51 @@ invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
 
 .code
 main PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+    sub esp, 12  ;reserve space for local variables
 
+    ;///store registers
+    push eax
+    push ecx
+    push ebx
+
+    call randomize
     call Introduction
-    
-    
+
+restart:
+    mov eax, 0  ;//will store num problems
+    mov ecx, 0  ;//will store num correct problems
+
+next_question:
+    sub esp, 4
+    push esp
+    inc eax
+    push eax
+    call OneProblem
+
+    add ecx, [esp]
+    add esp, 4
+
+    ;////call display hit percent
+
+    sub esp, 4
+    push esp
+    push OFFSET again_s
+    call yesOrNo
+    pop ebx
+    cmp ebx, YES
+    je next_question
+
+
+
+    ;///restore registers 
+    pop ebx
+    pop ecx
+    pop eax
+
+    mov esp, ebp ;free local variables
+    pop ebp      ;restore callers stack frame
 	exit	; exit to operating system
 main ENDP
 
@@ -85,6 +127,99 @@ main ENDP
 
     ret
 Introduction ENDP
+
+;#################################################
+;PROCEDURE:      one problem
+;
+;Purpose:   quiz the user on one problem
+;Recieves:  number of problems so far 
+;           adress to store student result (correct/incorrect)
+;Returns:   y/n correct answer
+;
+;#################################################
+n_local_op EQU DWORD PTR [ebp-4]
+r_local_op EQU DWORD PTR [ebp-8]
+OneProblem PROC
+
+    push ebp
+    mov ebp,esp ;set up stack frame
+    sub esp, 8  ;reserve space for local variables
+
+    ;///store registers
+    push eax
+
+    push [ebp+8]
+    lea eax, n_local_op
+    push eax
+    lea eax, r_local_op
+    push eax
+    call ShowProblem
+
+    mov eax, n_local_op
+    call crlf
+    call crlf
+    call writeDec
+    mov al, ','
+    call writeChar
+    mov eax, r_local_op
+    call writeDec
+    call crlf
+    
+    
+
+
+    ;///restore registers 
+    pop eax
+
+    mov esp, ebp ;free local variables
+    pop ebp      ;restore callers stack frame
+    Ret 8
+OneProblem ENDP
+
+;#################################################
+;PROCEDURE:    show problem  
+;
+;Purpose:   Generate and display a combinations problem
+;Recieves:  number of problem
+;           adress of R result
+;           adress of N result
+;Returns:   places random n and r in appropriate memory
+;
+;#################################################
+ShowProblem PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    push eax
+    push edi
+
+    WriteStrM problems_s
+    mov eax, [ebp+16]
+    call writeDec
+    
+    ;//Generate, display, and save N
+    mov eax, RANGE
+    call RandomRange
+    add eax, MIN
+    mov edi, [ebp+12]
+    mov DWORD PTR [edi], eax
+    WriteStrM choices_s
+    call writeDec
+
+    call RandomRange
+    add eax, 1
+    mov edi, [ebp+8]
+    mov DWORD PTR [edi], eax
+    WriteStrM elements_s
+    call writeDec
+
+
+    pop edi
+    pop eax
+
+    pop ebp     ;restore callers stack frame
+    Ret 12
+ShowProblem ENDP
 
 ;#################################################
 ;PROCEDURE:    yes or no  
