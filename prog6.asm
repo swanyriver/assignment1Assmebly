@@ -96,6 +96,7 @@ again_s         BYTE    13,10,13,10,"Would you like another problem? (y/n): ",0
 invalid_yn_s    BYTE    13,10,"Please limit your response to 'y' or 'n'",0
 invalid_alpha_s BYTE    13,10,"Please limit your response numeric characters only",0
 invalid_frac_s  BYTE    13,10,"The answer will always be a whole number",0
+invalid_neg_s  BYTE     13,10,"The answer will always be a posotive number",0
 invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
                 BYTE    13,10,"     also too large to be the answer",0
 
@@ -323,16 +324,22 @@ yesOrNo ENDP
 ;Returns:   users input converted to a number
 ;
 ;#################################################
+size_input_local_gd EQU DWORD PTR [ebp-BUFFER_SIZE-4]
+;next_number_local_gd EQU BYTE PTR [ebp-BUFFER_SIZE-8]
+
 GetData PROC
     push ebp
     mov ebp,esp ;set up stack frame
 
-    sub esp, BUFFER_SIZE ;reserve space for input
+    ;reserve space for input and locals
+    sub esp, BUFFER_SIZE 
+    sub esp, 4
 
     push eax
     push ecx
     push edx
     push esi
+    push ebx
 
 
 answer_prompt:
@@ -347,6 +354,7 @@ answer_prompt:
     ;//set up character inspection loop
     cld 
     lea esi, [ebp - BUFFER_SIZE]
+    mov size_input_local_gd, eax
     mov ecx, eax
 
 check_character:
@@ -358,17 +366,55 @@ check_character:
 
     loop check_character
 
+    ;//no invalid chars found converting to nuemeric
+    ;//ebx will store next number, eax stores result
+;    mov ecx, size_input_local_gd
+;    dec esi
+;    mov eax, 0
+;next_numeral:
+;    movzx ebx, BYTE ptr [esi]
+;    dec esi
+
+;    and ebx, 0Fh ;//convert to numeral
+
+;    mul eax, 10
+;    jc input_overflow
+;    add eax, ebx
+;    jc input_overflow
+
+;    loop next_numeral
+
+    ;//store result and exit
+;    mov [ebp+8], eax
     jmp return_gd
 
 non_numeric:
+    cmp al, '.'
+    jne negative
+    WriteStrM invalid_frac_s
+    jmp answer_prompt
 
-    ;///test code
-    call crlf
-    call writechar
-    call crlf
+negative:
+    cmp al,'-'
+    jne alpha
+    inc edx
+    cmp edx, esi
+    dec edx
+    jne alpha
+
+    WriteStrM invalid_neg_s
+    jmp answer_prompt
+
+alpha:    
+    WriteStrM invalid_alpha_s
+    jmp answer_prompt
+
+input_overflow:
+    WriteStrM invalid_of_s
     jmp answer_prompt
 
 return_gd:
+    pop ebx
     pop esi
     pop edx
     pop ecx
