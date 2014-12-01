@@ -64,28 +64,27 @@ invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
 .code
 main PROC
 
-loop_top:
-    push NO
-    push esp
-    push OFFSET again_s
-
-    call yesOrNo
-    WriteStrM invalid_of_s
-    pop eax
-    cmp eax, YES
-
-    je yesANS
-    jmp loop_top 
-
-    yesANS: WriteStrM invalid_frac_s
-    jmp loop_top
-
-
+    call Introduction
     
     
 	exit	; exit to operating system
 main ENDP
 
+;#################################################
+;PROCEDURE:      Introduction
+;
+;Purpose:   Display an introduction the the program
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+ Introduction PROC
+    
+    WriteStrM intro_s
+    WriteStrM about_s
+
+    ret
+Introduction ENDP
 
 ;#################################################
 ;PROCEDURE:    yes or no  
