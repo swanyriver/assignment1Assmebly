@@ -203,6 +203,12 @@ OneProblem PROC
     push eax
     call GetData
 
+    mov eax, answer_local_op
+    call crlf
+    call writeDec
+    call crlf
+
+
 
     ;// call COMBINATIONS
 
@@ -325,8 +331,6 @@ yesOrNo ENDP
 ;
 ;#################################################
 size_input_local_gd EQU DWORD PTR [ebp-BUFFER_SIZE-4]
-;next_number_local_gd EQU BYTE PTR [ebp-BUFFER_SIZE-8]
-
 GetData PROC
     push ebp
     mov ebp,esp ;set up stack frame
@@ -338,6 +342,7 @@ GetData PROC
     push eax
     push ecx
     push edx
+    push edi
     push esi
     push ebx
 
@@ -368,24 +373,27 @@ check_character:
 
     ;//no invalid chars found converting to nuemeric
     ;//ebx will store next number, eax stores result
-;    mov ecx, size_input_local_gd
-;    dec esi
-;    mov eax, 0
-;next_numeral:
-;    movzx ebx, BYTE ptr [esi]
-;    dec esi
+    mov ecx, size_input_local_gd
+    lea esi, [ebp - BUFFER_SIZE]
+    mov eax, 0
+    mov edi, 10 ;//multiplier
+next_numeral:
+    movzx ebx, BYTE ptr [esi]
+    inc esi
 
-;    and ebx, 0Fh ;//convert to numeral
+    and ebx, 0Fh ;//convert to numeral
 
-;    mul eax, 10
-;    jc input_overflow
-;    add eax, ebx
-;    jc input_overflow
+    ;//shift current and add next digit
+    mul edi
+    jc input_overflow
+    add eax, ebx
+    jc input_overflow
 
-;    loop next_numeral
+    loop next_numeral
 
     ;//store result and exit
-;    mov [ebp+8], eax
+    mov edi, [ebp+8]
+    mov [edi], eax
     jmp return_gd
 
 non_numeric:
@@ -414,6 +422,7 @@ input_overflow:
 return_gd:
     pop ebx
     pop esi
+    pop edi
     pop edx
     pop ecx
     pop eax
