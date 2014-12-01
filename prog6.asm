@@ -21,10 +21,44 @@ INCLUDE Macros.inc
 ;Returns:   none
 ;
 ;#################################################
-WriteStrM MACRO buffer
+WriteStrM MACRO str
     push edx
-    mov edx, OFFSET buffer
+    mov edx, OFFSET str
     call WriteString
+    pop edx
+ENDM
+
+;#################################################
+;MACRO:    show score 
+;
+;Purpose:   display correct vs attempts
+;Recieves:  #correct, #attempts
+;Returns:   none
+;
+;#################################################
+ShowScoreM MACRO correct, attempts
+    push edx
+    push eax
+
+    mov edx, OFFSET correct_num_s
+    call WriteString
+
+    mov eax, correct
+    call writeDec
+    ;//second paramater may be eax, restored and saved again
+    pop eax
+    push eax
+
+    mov edx, OFFSET outof_s
+    call WriteString
+
+    mov eax, attempts
+    call writeDec
+
+    mov edx, OFFSET questions_s
+    call WriteString
+
+    pop eax
     pop edx
 ENDM
 
@@ -51,6 +85,9 @@ answerReveal2_s BYTE    " elements in "
 answerReveal3_s BYTE    " different ways",0
 correct_s       BYTE    13,10,"Well Done!, you got the answer correct",0
 wrong_s         BYTE    13,10,"It looks like you didn't get, better luck on the next one",0
+correct_num_s   BYTE    13,10,"You have correctly answered ",0
+outof_s         BYTE    " out of ",0
+questions_s     BYTE    " questions",13,10,0
 again_s         BYTE    13,10,13,10,"Would you like another problem? (y/n): ",0
 
 
@@ -87,11 +124,12 @@ next_question:
     push eax
     call OneProblem
 
+    ;//record and display score
     add ecx, [esp]
     add esp, 4
+    ShowScoreM ecx, eax
 
-    ;////call display hit percent
-
+    ;//check if user wants another question
     sub esp, 4
     push esp
     push OFFSET again_s
@@ -155,17 +193,11 @@ OneProblem PROC
     push eax
     call ShowProblem
 
-    mov eax, n_local_op
-    call crlf
-    call crlf
-    call writeDec
-    mov al, ','
-    call writeChar
-    mov eax, r_local_op
-    call writeDec
-    call crlf
-    
-    
+    ;////call GET DATA
+
+    ;// call COMBINATIONS
+
+    ;/// call SHOW ANSWER 
 
 
     ;///restore registers 
