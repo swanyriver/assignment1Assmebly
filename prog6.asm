@@ -29,6 +29,21 @@ WriteStrM MACRO str
 ENDM
 
 ;#################################################
+;MACRO:    write dec
+;
+;Purpose:   display a number
+;Recieves:  number variable
+;Returns:   none
+;
+;#################################################
+WriteDcM MACRO number
+    push eax
+    mov eas, number
+    call writeDec
+    pop eax
+ENDM
+
+;#################################################
 ;MACRO:    show score 
 ;
 ;Purpose:   display correct vs attempts
@@ -203,19 +218,20 @@ OneProblem PROC
     push eax
     call GetData
 
-    ;// call COMBINATIONS
+    ;// calculate number of combinations
     push n_local_op
     push r_local_op
     lea eax, solution_local_op
     push eax
     call Combinations
 
-    mov eax, solution_local_op
-    call crlf
-    call writeDec
-    call crlf
+    ;///display solution and correctness
+    ;push n_local_op
+    ;push r_local_op
+    ;push answer_local_op
+    ;push solution_local_op
+    ;call ShowAnswer
 
-    ;/// call SHOW ANSWER 
 
 
     ;///restore registers 
@@ -271,6 +287,16 @@ ShowProblem PROC
     pop ebp     ;restore callers stack frame
     Ret 12
 ShowProblem ENDP
+
+;#################################################
+;PROCEDURE:    show answer  
+;
+;Purpose:   display the combination solution and if user is correct
+;Recieves:  n,r,answer,solution (by value)
+;Returns:   none
+;
+;#################################################
+
 
 ;#################################################
 ;PROCEDURE:    yes or no  
@@ -438,11 +464,11 @@ return_gd:
 GetData ENDP
 
 ;#################################################
-;PROCEDURE:      
+;PROCEDURE:      Combinations
 ;
-;Purpose:   
-;Recieves:  none
-;Returns:   none
+;Purpose:   find solution to combination problem
+;Recieves:  n, r, and adress for solution
+;Returns:   n!/r!(n-r)!
 ;
 ;#################################################
 nfact_local_cmb EQU DWORD PTR [ebp-4]
@@ -484,9 +510,6 @@ Combinations  PROC
     mov eax, nfact_local_cmb
     mov edx, 0
     div ebx
-
-    ;//debug material
-    call dumpregs
 
     mov edx, [ebp+8]
     mov [edx], eax
