@@ -38,7 +38,7 @@ ENDM
 ;#################################################
 WriteDcM MACRO number
     push eax
-    mov eas, number
+    mov eax, number
     call writeDec
     pop eax
 ENDM
@@ -96,11 +96,11 @@ problems_s      BYTE    13,10,"Problem #",0
 elements_s      BYTE    13,10,"Number of elements in the combinations: ",0
 choices_s       BYTE    13,10,"Number of elements from wich to choose: ",0
 answerPrompts_s BYTE    13,10,"How many ways can you choose: ",0
-answerReveal_s  BYTE    13,10," elements can be chosen from "
-answerReveal2_s BYTE    " elements in "
+answerReveal_s  BYTE    " elements can be chosen from ",0
+answerReveal2_s BYTE    " elements in ",0
 answerReveal3_s BYTE    " different ways",0
 correct_s       BYTE    13,10,"Well Done!, you got the answer correct",0
-wrong_s         BYTE    13,10,"It looks like you didn't get, better luck on the next one",0
+wrong_s         BYTE    13,10,"It looks like you didn't get it right, better luck on the next one",0
 correct_num_s   BYTE    13,10,"You have correctly answered ",0
 outof_s         BYTE    " out of ",0
 questions_s     BYTE    " questions",13,10,0
@@ -226,11 +226,11 @@ OneProblem PROC
     call Combinations
 
     ;///display solution and correctness
-    ;push n_local_op
-    ;push r_local_op
-    ;push answer_local_op
-    ;push solution_local_op
-    ;call ShowAnswer
+    push n_local_op
+    push r_local_op
+    push answer_local_op
+    push solution_local_op
+    call ShowAnswer
 
 
 
@@ -296,7 +296,37 @@ ShowProblem ENDP
 ;Returns:   none
 ;
 ;#################################################
+ShowAnswer PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
 
+    push eax
+
+    ;//display answer
+    writeDcM [ebp+16]
+    WriteStrM answerReveal_s
+    writeDcM [ebp+20]
+    WriteStrM answerReveal2_s
+    writeDcM [ebp+8]
+    WriteStrM answerReveal3_s
+
+    ;//display if user was correct
+    mov eax, [ebp+12]
+    cmp eax, [ebp+8]
+
+    jne incorrect_answer
+    WriteStrM correct_s
+    jmp return_showAnswer
+
+incorrect_answer:    
+    WriteStrM wrong_s
+
+return_showAnswer:
+    pop eax
+
+    pop ebp     ;restore callers stack frame
+    Ret 16
+ShowAnswer ENDP
 
 ;#################################################
 ;PROCEDURE:    yes or no  
