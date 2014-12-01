@@ -1,4 +1,4 @@
-TITLE assingment 6     (prog6.asm)
+TITLE assingment 6b     (prog6.asm)
 
 ; Author:Brandon Swanson  swansonb@onid.orst.edu
 ; Course / Project ID   CS271-400 Fall14 Programming Assignment #6  Date: 12/07/14
@@ -203,14 +203,17 @@ OneProblem PROC
     push eax
     call GetData
 
-    mov eax, answer_local_op
+    ;// call COMBINATIONS
+    push n_local_op
+    push r_local_op
+    lea eax, solution_local_op
+    push eax
+    call Combinations
+
+    mov eax, solution_local_op
     call crlf
     call writeDec
     call crlf
-
-
-
-    ;// call COMBINATIONS
 
     ;/// call SHOW ANSWER 
 
@@ -253,6 +256,7 @@ ShowProblem PROC
     WriteStrM choices_s
     call writeDec
 
+    ;//Generate, display, and save R
     call RandomRange
     add eax, 1
     mov edi, [ebp+8]
@@ -396,6 +400,7 @@ next_numeral:
     mov [edi], eax
     jmp return_gd
 
+;////////////////////ERROR CASES///////////
 non_numeric:
     cmp al, '.'
     jne negative
@@ -431,6 +436,69 @@ return_gd:
     pop ebp      ;restore callers stack frame
     Ret 4
 GetData ENDP
+
+;#################################################
+;PROCEDURE:      
+;
+;Purpose:   
+;Recieves:  none
+;Returns:   none
+;
+;#################################################
+nfact_local_cmb EQU DWORD PTR [ebp-4]
+rfact_local_cmb EQU DWORD PTR [ebp-8]
+nminrfact_local_cmb EQU DWORD PTR [ebp-12]
+Combinations  PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+    sub esp, 12
+
+    push eax
+    push edx
+    push ebx
+
+    ;//factorialize all variables///
+    lea eax, nfact_local_cmb
+    push eax
+    push [ebp+16]
+    call factorial
+
+    lea eax, rfact_local_cmb
+    push eax
+    push [ebp+12]
+    call factorial
+
+    lea eax, nminrfact_local_cmb
+    push eax
+    mov eax, [ebp+16]
+    sub eax, [ebp+12]
+    push eax
+    call factorial
+
+    ;//calculate divisor r!(n-r)!
+    mov eax, rfact_local_cmb
+    mul nminrfact_local_cmb
+    mov ebx, eax
+
+    ;//peform n!/r!(n-r)!
+    mov eax, nfact_local_cmb
+    mov edx, 0
+    div ebx
+
+    ;//debug material
+    call dumpregs
+
+    mov edx, [ebp+8]
+    mov [edx], eax
+
+    pop ebx
+    pop edx
+    pop eax
+
+    mov esp, ebp ;free local variables
+    pop ebp      ;restore callers stack frame
+    Ret 12
+Combinations ENDP
 
 ;#################################################
 ;PROCEDURE:    Factorial  
