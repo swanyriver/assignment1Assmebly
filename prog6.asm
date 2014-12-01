@@ -397,9 +397,7 @@ non_numeric:
 negative:
     cmp al,'-'
     jne alpha
-    inc edx
-    cmp edx, esi
-    dec edx
+    cmp ecx, size_input_local_gd
     jne alpha
 
     WriteStrM invalid_neg_s
