@@ -323,8 +323,6 @@ yesOrNo ENDP
 ;Returns:   users input converted to a number
 ;
 ;#################################################
-;X_param EQU DWORD PTR [ebp+8]
-;Y_param EQU DWORD PTR [ebp+12]
 GetData PROC
     push ebp
     mov ebp,esp ;set up stack frame
@@ -378,7 +376,7 @@ return_gd:
 
     mov esp, ebp ;free local variables
     pop ebp      ;restore callers stack frame
-    Ret
+    Ret 4
 GetData ENDP
 
 ;#################################################
