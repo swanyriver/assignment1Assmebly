@@ -68,6 +68,7 @@ MAX   = 12
 RANGE = MAX-MIN+1
 YES   = 1
 NO    = 0
+BUFFER_SIZE = 16
 
 .data
 ;//////////////STRINGS///////////////////////////////
@@ -177,15 +178,18 @@ Introduction ENDP
 ;#################################################
 n_local_op EQU DWORD PTR [ebp-4]
 r_local_op EQU DWORD PTR [ebp-8]
+answer_local_op EQU DWORD PTR [ebp-12]
+solution_local_op EQU DWORD PTR [ebp-16]
 OneProblem PROC
 
     push ebp
     mov ebp,esp ;set up stack frame
-    sub esp, 8  ;reserve space for local variables
+    sub esp, 16  ;reserve space for local variables
 
     ;///store registers
     push eax
 
+    ;//display problems and recive N and R
     push [ebp+8]
     lea eax, n_local_op
     push eax
@@ -193,7 +197,11 @@ OneProblem PROC
     push eax
     call ShowProblem
 
-    ;////call GET DATA
+    ;////get users answer
+    lea eax, answer_local_op
+    push eax
+    call GetData
+
 
     ;// call COMBINATIONS
 
@@ -306,6 +314,72 @@ return_yn:
     pop ebp     ;restore callers stack frame
     Ret 8
 yesOrNo ENDP
+
+;#################################################
+;PROCEDURE:     get data 
+;
+;Purpose:   retrive an answer from the user
+;Recieves:  adress to store input
+;Returns:   users input converted to a number
+;
+;#################################################
+;X_param EQU DWORD PTR [ebp+8]
+;Y_param EQU DWORD PTR [ebp+12]
+GetData PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+
+    sub esp, BUFFER_SIZE ;reserve space for input
+
+    push eax
+    push ecx
+    push edx
+    push esi
+
+
+answer_prompt:
+    WriteStrM answerPrompts_s
+
+    ;//recieve ascii input from user    
+    lea edx, [ebp - BUFFER_SIZE]
+    mov ecx, BUFFER_SIZE-1
+    call ReadString
+
+
+    ;//set up character inspection loop
+    cld 
+    lea esi, [ebp - BUFFER_SIZE]
+    mov ecx, eax
+
+check_character:
+    lodsb
+    cmp al, '0'
+    jl non_numeric
+    cmp al, '9'
+    ja non_numeric
+
+    loop check_character
+
+    jmp return_gd
+
+non_numeric:
+
+    ;///test code
+    call crlf
+    call writechar
+    call crlf
+    jmp answer_prompt
+
+return_gd:
+    pop esi
+    pop edx
+    pop ecx
+    pop eax
+
+    mov esp, ebp ;free local variables
+    pop ebp      ;restore callers stack frame
+    Ret
+GetData ENDP
 
 ;#################################################
 ;PROCEDURE:    Factorial  
