@@ -7,11 +7,11 @@ TITLE assingment 6b     (prog6.asm)
 ;               Combinations of a given size from a given set, C(n,r), that is generated
 ;               Randomly.  It will check if their answer is correct and inform them of
 ;               the correct answer.
+;
+; Extra Credit: Problems are number and score is kept and announced
 
 
 INCLUDE Irvine32.inc
-INCLUDE Macros.inc
-
 ;////////////////MACROS//////////////////
 ;#################################################
 ;MACRO:    write string  
@@ -88,6 +88,7 @@ wrong_s         BYTE    13,10,"It looks like you didn't get it right, better luc
 correct_num_s   BYTE    13,10,13,10,"You have correctly answered ",0
 outof_s         BYTE    " out of ",0
 questions_s     BYTE    " questions",13,10,0
+final_score_s   BYTE    13,10,"Your final score was ",0
 again_s         BYTE    13,10,"Would you like another problem? (y/n): ",0
 restart_s       BYTE    13,10,13,10,"Would another student like to try? (y/n): ",0
 goodbye_s       BYTE    13,10,13,10,"Thank you for using my program"
@@ -113,7 +114,24 @@ main PROC
     push ecx
     push ebx
 
+    ;//initialization tasks
+    finit
     call randomize
+
+    ;////debug
+    push 1
+    push 20
+    call CalculateScore
+
+    push 1
+    push 30
+    call CalculateScore
+
+    push 2
+    push 11
+    call CalculateScore
+
+
     call Introduction
 
 restart:
@@ -140,6 +158,11 @@ next_question:
     pop ebx
     cmp ebx, YES
     je next_question
+
+    ;//annonce final score
+    push ecx
+    push eax
+    call CalculateScore
 
     ;//next question declined
     sub esp, 4
@@ -178,6 +201,82 @@ main ENDP
 
     ret
 Introduction ENDP
+
+;#################################################
+;PROCEDURE:      Calculate Score
+;
+;Purpose:   determine users acuracy percentage to two decimal places
+;           and display it
+;Recieves:  #correct problems, #problems attempted 
+;Returns:   none
+;
+;#################################################
+percent_local_cs EQU DWORD PTR [ebp-4]
+numberString_local_cs EQU BYTE PTR [ebp-12] ;room for 8 chars
+CalculateScore  PROC
+    push ebp
+    mov ebp,esp ;set up stack frame
+    sub esp, 12
+
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push edi
+
+    ;//perform division and move decimal 4 places
+    fild DWORD PTR [ebp+12]
+    fidiv DWORD PTR [ebp+8]
+    push 10000
+    fimul DWORD PTR [esp]
+    add esp, 4
+    fist percent_local_cs
+
+    ;//convert number to string with . and %
+    lea edi, numberString_local_cs
+    mov eax, percent_local_cs
+    mov ebx, 10
+    mov ecx, 0
+
+adddigit:
+    mov edx, 0
+    div ebx
+    push edx
+    inc ecx
+    cmp eax, 0
+    jne adddigit
+
+emptyStack:
+    pop eax
+    or al, 30h
+    stosb
+    cmp ecx, 3
+    jne continue_loop
+    ;//add decimal point
+    mov al, '.'
+    stosb
+    continue_loop:
+    loop emptyStack
+
+    mov al, '%'
+    stosb
+    mov BYTE PTR [edi],0
+
+    WriteStrM final_score_s
+    lea edx, numberString_local_cs
+    call WriteString
+    call crlf
+
+    pop edi
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+
+    mov esp, ebp ;free local variables
+    pop ebp      ;restore callers stack frame
+    Ret
+CalculateScore ENDP
 
 ;#################################################
 ;PROCEDURE:      one problem
