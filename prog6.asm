@@ -78,7 +78,7 @@ about_s         BYTE    13,10,"This program will quiz you on combination problem
                 BYTE    13,10,"will let you know if you were correct",13,10,13,10,0
 problems_s      BYTE    13,10,13,10,"Problem #",0
 elements_s      BYTE    13,10,"Number of elements in the combinations: ",0
-choices_s       BYTE    13,10,"Number of elements from wich to choose: ",0
+choices_s       BYTE    13,10,"Number of elements from which to choose: ",0
 answerPrompts_s BYTE    13,10,"How many ways can you choose: ",0
 answerReveal_s  BYTE    " elements can be chosen from ",0
 answerReveal2_s BYTE    " elements in ",0
@@ -88,7 +88,7 @@ wrong_s         BYTE    13,10,"It looks like you didn't get it right, better luc
 correct_num_s   BYTE    13,10,13,10,"You have correctly answered ",0
 outof_s         BYTE    " out of ",0
 questions_s     BYTE    " questions",13,10,0
-final_score_s   BYTE    13,10,"Your final score was ",0
+final_score_s   BYTE    13,10,13,10,"Your final score was ",0
 again_s         BYTE    13,10,"Would you like another problem? (y/n): ",0
 restart_s       BYTE    13,10,13,10,"Would another student like to try? (y/n): ",0
 goodbye_s       BYTE    13,10,13,10,"Thank you for using my program"
@@ -98,7 +98,7 @@ goodbye_s       BYTE    13,10,13,10,"Thank you for using my program"
 invalid_yn_s    BYTE    13,10,"Please limit your response to 'y' or 'n'",0
 invalid_alpha_s BYTE    13,10,"Please limit your response numeric characters only",0
 invalid_frac_s  BYTE    13,10,"The answer will always be a whole number",0
-invalid_neg_s  BYTE     13,10,"The answer will always be a posotive number",0
+invalid_neg_s  BYTE     13,10,"The answer will always be a positive number",0
 invalid_of_s    BYTE    13,10,"The number you entered is too large to store"
                 BYTE    13,10,"     also too large to be the answer",0
 
@@ -117,20 +117,6 @@ main PROC
     ;//initialization tasks
     finit
     call randomize
-
-    ;////debug
-    push 1
-    push 20
-    call CalculateScore
-
-    push 1
-    push 30
-    call CalculateScore
-
-    push 2
-    push 11
-    call CalculateScore
-
 
     call Introduction
 
@@ -159,7 +145,7 @@ next_question:
     cmp ebx, YES
     je next_question
 
-    ;//annonce final score
+    ;//announce final score
     push ecx
     push eax
     call CalculateScore
@@ -205,7 +191,7 @@ Introduction ENDP
 ;#################################################
 ;PROCEDURE:      Calculate Score
 ;
-;Purpose:   determine users acuracy percentage to two decimal places
+;Purpose:   determine users accuracy percentage to two decimal places
 ;           and display it
 ;Recieves:  #correct problems, #problems attempted 
 ;Returns:   none
@@ -283,8 +269,8 @@ CalculateScore ENDP
 ;
 ;Purpose:   quiz the user on one problem
 ;Recieves:  number of problems so far 
-;           adress to store student result (correct/incorrect)
-;Returns:   y/n correct answer
+;           address to store student result (correct/incorrect)
+;Returns:   y/n correct answer 
 ;
 ;#################################################
 n_local_op EQU DWORD PTR [ebp-4]
@@ -300,7 +286,7 @@ OneProblem PROC
     ;///store registers
     push eax
 
-    ;//display problems and recive N and R
+    ;//display problems and receive N and R
     push [ebp+8]
     lea eax, n_local_op
     push eax
@@ -352,8 +338,8 @@ OneProblem ENDP
 ;
 ;Purpose:   Generate and display a combinations problem
 ;Recieves:  number of problem
-;           adress of R result
-;           adress of N result
+;           address of R result
+;           address of N result
 ;Returns:   places random n and r in appropriate memory
 ;
 ;#################################################
@@ -436,8 +422,8 @@ ShowAnswer ENDP
 ;#################################################
 ;PROCEDURE:    yes or no  
 ;
-;Purpose:   recieve an afirmative or negative answer from user
-;Recieves:   address in wich to store result
+;Purpose:   receive an affirmative or negative answer from user
+;Recieves:   address in which to store result
 ;            OFFSET of input prompt
 ;Returns:   places YES/NO constant in specified location
 ;
@@ -490,8 +476,8 @@ yesOrNo ENDP
 ;#################################################
 ;PROCEDURE:     get data 
 ;
-;Purpose:   retrive an answer from the user
-;Recieves:  adress to store input
+;Purpose:   retrieve an answer from the user
+;Recieves:  address to store input
 ;Returns:   users input converted to a number
 ;
 ;#################################################
@@ -515,7 +501,7 @@ GetData PROC
 answer_prompt:
     WriteStrM answerPrompts_s
 
-    ;//recieve ascii input from user    
+    ;//receive ASCII input from user    
     lea edx, [ebp - BUFFER_SIZE]
     mov ecx, BUFFER_SIZE-1
     call ReadString
@@ -536,7 +522,7 @@ check_character:
 
     loop check_character
 
-    ;//no invalid chars found converting to nuemeric
+    ;//no invalid chars found converting to numeric
     ;//ebx will store next number, eax stores result
     mov ecx, size_input_local_gd
     lea esi, [ebp - BUFFER_SIZE]
@@ -602,7 +588,7 @@ GetData ENDP
 ;PROCEDURE:      Combinations
 ;
 ;Purpose:   find solution to combination problem
-;Recieves:  n, r, and adress for solution
+;Recieves:  n, r, and address for solution
 ;Returns:   n!/r!(n-r)!
 ;
 ;#################################################
@@ -641,7 +627,7 @@ Combinations  PROC
     mul nminrfact_local_cmb
     mov ebx, eax
 
-    ;//peform n!/r!(n-r)!
+    ;//perform n!/r!(n-r)!
     mov eax, nfact_local_cmb
     mov edx, 0
     div ebx
@@ -662,9 +648,9 @@ Combinations ENDP
 ;PROCEDURE:    Factorial  
 ;
 ;Purpose:   calculate the factorial of a number
-;Recieves:  the nuber to factorialize
-;           address in wich to store result
-;Returns:   places calculated value in recieved adress
+;Recieves:  the number to factorialize
+;           address in which to store result
+;Returns:   places calculated value in received address
 ;
 ;#################################################
 factorial  PROC
@@ -686,17 +672,17 @@ factorial  PROC
     jmp return_fact
 
 recursive:
-    ;reserve space for result and pass adress
+    ;reserve space for result and pass address
     sub esp, 4
     push esp
 
-    ;//pass recieved number -1
+    ;//pass received number -1
     push eax
     dec DWORD PTR [esp]
 
     call factorial
 
-    ;//calculate and storeresult
+    ;//calculate and store result
     mul DWORD PTR [esp]
     mov edi, [ebp+12]
 	mov DWORD PTR [edi], eax
