@@ -75,8 +75,8 @@ intro_s         BYTE    "Welcome to Combinations Calculator",13,10
                 BYTE    "Programmed by Brandon Swanson",13,10,0
 about_s         BYTE    13,10,"This program will quiz you on combination problems"
                 BYTE    13,10,"you will enter the number of possible choices and it"
-                BYTE    13,10,"will let you know if you were correct",0
-problems_s      BYTE    13,10,"Problem #",0
+                BYTE    13,10,"will let you know if you were correct",13,10,13,10,0
+problems_s      BYTE    13,10,13,10,"Problem #",0
 elements_s      BYTE    13,10,"Number of elements in the combinations: ",0
 choices_s       BYTE    13,10,"Number of elements from wich to choose: ",0
 answerPrompts_s BYTE    13,10,"How many ways can you choose: ",0
@@ -85,11 +85,13 @@ answerReveal2_s BYTE    " elements in ",0
 answerReveal3_s BYTE    " different ways",0
 correct_s       BYTE    13,10,"Well Done!, you got the answer correct",0
 wrong_s         BYTE    13,10,"It looks like you didn't get it right, better luck on the next one",0
-correct_num_s   BYTE    13,10,"You have correctly answered ",0
+correct_num_s   BYTE    13,10,13,10,"You have correctly answered ",0
 outof_s         BYTE    " out of ",0
 questions_s     BYTE    " questions",13,10,0
-again_s         BYTE    13,10,13,10,"Would you like another problem? (y/n): ",0
-
+again_s         BYTE    13,10,"Would you like another problem? (y/n): ",0
+restart_s       BYTE    13,10,13,10,"Would another student like to try? (y/n): ",0
+goodbye_s       BYTE    13,10,13,10,"Thank you for using my program"
+                BYTE    13,10,"  Goodbye",13,10,0
 
 ;//////////////////ERROR MESSAGES////////////////////
 invalid_yn_s    BYTE    13,10,"Please limit your response to 'y' or 'n'",0
@@ -139,7 +141,17 @@ next_question:
     cmp ebx, YES
     je next_question
 
+    ;//next question declined
+    sub esp, 4
+    push esp
+    push OFFSET restart_s
+    call yesOrNo
+    pop ebx
+    cmp ebx, YES
+    je restart
 
+    ;//farewell
+    WriteStrM goodbye_s
 
     ;///restore registers 
     pop ebx
@@ -254,8 +266,7 @@ ShowProblem PROC
     push edi
 
     WriteStrM problems_s
-    mov eax, [ebp+16]
-    call writeDec
+    writeDcM [ebp+16]
     
     ;//Generate, display, and save N
     mov eax, RANGE
@@ -297,6 +308,7 @@ ShowAnswer PROC
     push eax
 
     ;//display answer
+    call crlf
     writeDcM [ebp+16]
     WriteStrM answerReveal_s
     writeDcM [ebp+20]
