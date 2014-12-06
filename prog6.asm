@@ -3,7 +3,7 @@ TITLE assingment 6b     (prog6.asm)
 ; Author:Brandon Swanson  swansonb@onid.orst.edu
 ; Course / Project ID   CS271-400 Fall14 Programming Assignment #6  Date: 12/07/14
 
-; Description: This program will test the useres ability to calculate the possible
+; Description: This program will test the user's ability to calculate the possible
 ;               Combinations of a given size from a given set, C(n,r), that is generated
 ;               Randomly.  It will check if their answer is correct and inform them of
 ;               the correct answer.
@@ -77,7 +77,7 @@ about_s         BYTE    13,10,"This program will quiz you on combination problem
                 BYTE    13,10,"you will enter the number of possible choices and it"
                 BYTE    13,10,"will let you know if you were correct",13,10,13,10,0
 problems_s      BYTE    13,10,13,10,"Problem #",0
-elements_s      BYTE    13,10,"Number of elements in the combinations: ",0
+elements_s      BYTE    13,10,"Number of elements in the combinations : ",0
 choices_s       BYTE    13,10,"Number of elements from which to choose: ",0
 answerPrompts_s BYTE    13,10,"How many ways can you choose: ",0
 answerReveal_s  BYTE    " elements can be chosen from ",0
