@@ -56,8 +56,7 @@ bubble PROC
 
 outer:
     dec ebx
-    cmp ebx, 0
-    je exit_loop
+    jz exit_loop
 
     mov esi, [ebp+12]
     mov ecx, ebx
