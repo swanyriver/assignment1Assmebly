@@ -51,15 +51,16 @@ bubble PROC
     push esi
 
 ;//prep outer loop
-    mov ebx, [ebp+8]
-    cld
-
+mov ebx, [ebp+8] ;//lengthof array
+cld
 outer:
+    ;// processing smaller and smaller part
+    ;// begining at n-1
     dec ebx
     jz exit_loop
 
-    mov esi, [ebp+12]
-    mov ecx, ebx
+    mov esi, [ebp+12] ;/address of array
+    mov ecx, ebx      ;/loop count
 
     inner:
         mov edi, esi
@@ -67,6 +68,7 @@ outer:
         cmp ax, word ptr [esi]
         jle loop_again
 
+        ;//exchg values
         movsw
         stosw
         sub esi, 2
@@ -74,7 +76,6 @@ outer:
     loop_again: loop inner
 
     jmp outer
-
 
 exit_loop:
     pop esi
